@@ -1,5 +1,0 @@
-@media (max-width: 1180px) {
-  .expedition {
-    grid-template-areas: 'left' 'center' 'right';
-  }
-}
