@@ -28,6 +28,7 @@
   const chargingCount = document.getElementById('charging-count');
   const chargingPhases = document.getElementById('charging-phases');
   const chargingSummary = document.getElementById('charging-summary-note');
+  const phaseTitleEls = Array.from(document.querySelectorAll('.charging-phase-title'));
   const stationCacheKey = 'iceland-charging-stations-cache-v2';
   const stationCacheMaxAgeMs = 12 * 60 * 60 * 1000;
 
@@ -38,6 +39,15 @@
   const markerById = new Map();
   let chargingMap = null;
   let currentStations = fallbackStations.slice();
+  let activePhaseFilter = null;
+  const defaultSummaryMessage = chargingSummary ? chargingSummary.textContent : '';
+
+  function getVisibleStations() {
+    if (!activePhaseFilter) {
+      return currentStations;
+    }
+    return currentStations.filter((station) => Number(station.phase) === activePhaseFilter);
+  }
 
   function updateSummary(message) {
     if (chargingSummary) {
@@ -177,6 +187,52 @@
       </article>`;
   }
 
+  function updatePhaseTitleUi() {
+    phaseTitleEls.forEach((titleEl, index) => {
+      const phase = index + 1;
+      const selected = activePhaseFilter === phase;
+      titleEl.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      titleEl.style.cursor = 'pointer';
+      titleEl.style.userSelect = 'none';
+      titleEl.style.textDecoration = 'underline';
+      titleEl.style.textUnderlineOffset = '3px';
+      titleEl.style.textDecorationThickness = selected ? '2px' : '1px';
+      titleEl.style.opacity = selected ? '1' : '0.9';
+    });
+  }
+
+  function setPhaseFilter(phase) {
+    activePhaseFilter = activePhaseFilter === phase ? null : phase;
+    if (activePhaseFilter) {
+      updateSummary(`Filtered to Phase ${activePhaseFilter}. Click the same region again to clear the filter.`);
+    } else {
+      updateSummary(defaultSummaryMessage || 'Plotted charging hubs cover the practical stops on this trip. Confirm live charger availability before departure.');
+    }
+    updatePhaseTitleUi();
+    renderStationList();
+    renderChargingMapStations();
+  }
+
+  function bindPhaseFilterLinks() {
+    phaseTitleEls.forEach((titleEl, index) => {
+      const phase = index + 1;
+      titleEl.dataset.phaseFilter = String(phase);
+      titleEl.setAttribute('role', 'button');
+      titleEl.setAttribute('tabindex', '0');
+      titleEl.setAttribute('aria-label', `Filter charging stations to Phase ${phase}`);
+      titleEl.setAttribute('aria-pressed', 'false');
+      titleEl.addEventListener('click', () => setPhaseFilter(phase));
+      titleEl.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return;
+        }
+        event.preventDefault();
+        setPhaseFilter(phase);
+      });
+    });
+    updatePhaseTitleUi();
+  }
+
   function activateStationById(stationId) {
     const station = currentStations.find((item) => item.id === stationId);
     if (!station || !chargingMap) {
@@ -190,15 +246,16 @@
   }
 
   function renderStationList() {
-    const phaseCount = new Set(currentStations.map((station) => station.phase)).size;
-    chargingCount.textContent = `${currentStations.length}`;
+    const visibleStations = getVisibleStations();
+    const phaseCount = new Set(visibleStations.map((station) => station.phase)).size;
+    chargingCount.textContent = `${visibleStations.length}`;
     chargingPhases.textContent = `${phaseCount}`;
     phaseListEls.forEach((el, index) => {
       const phase = index + 1;
-      const items = currentStations.filter((station) => Number(station.phase) === phase);
+      const items = visibleStations.filter((station) => Number(station.phase) === phase);
       el.innerHTML = items.length
         ? items.map(stationArticleHtml).join('')
-        : '<p class="charging-phase-empty">No stations in this phase for the current dataset.</p>';
+        : '<p class="charging-phase-empty">No stations in this phase for the current filter.</p>';
     });
 
     if (!chargingPanelEl.dataset.stationActivateBound) {
@@ -225,11 +282,12 @@
   }
 
   function fitChargingBounds() {
-    if (!chargingMap || !currentStations.length) {
+    const visibleStations = getVisibleStations();
+    if (!chargingMap || !visibleStations.length) {
       return;
     }
     const bounds = new maplibregl.LngLatBounds();
-    currentStations.forEach((station) => bounds.extend([station.lon, station.lat]));
+    visibleStations.forEach((station) => bounds.extend([station.lon, station.lat]));
     chargingMap.fitBounds(bounds, { padding: { top: 28, right: 28, bottom: 28, left: 28 }, duration: 0 });
   }
 
@@ -239,7 +297,7 @@
     }
 
     clearChargingMarkers();
-    currentStations.forEach((station) => {
+    getVisibleStations().forEach((station) => {
       const marker = new maplibregl.Marker({ element: createMarkerElement(station) })
         .setLngLat([station.lon, station.lat])
         .setPopup(new maplibregl.Popup({ offset: 16 }).setHTML(`<div class="popup-title">${station.name}</div><div class="popup-note"><strong>${station.address || station.city}</strong><br>${station.note}<br><a href="${buildGoogleMapsUrl(station)}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a><br>Phase ${station.phase}${station.live ? '<br>Live OpenStreetMap result' : ''}</div>`))
@@ -427,6 +485,8 @@
   tabButtons.forEach((button) => {
     button.addEventListener('click', () => setActiveTab(button.dataset.mapTab));
   });
+
+  bindPhaseFilterLinks();
 
   const cachedStations = readCachedStations();
   if (cachedStations) {
