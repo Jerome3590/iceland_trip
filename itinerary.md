@@ -1,59 +1,77 @@
-# Ultimate Iceland Ring Road Expedition: May 3-14, 2026
+# Iceland Ring Road Expedition — Latest Itinerary Update
 
-Mapped baseline: 2595.7 km, 39h 44m driving.
+Updated May 10, 2026. Phase 3 follows the Phase 2 Route 1 corridor with a southbound extension to Selfoss due to weather. Bjarnaflag and Krafla power-station visits are now separate mapped stops.
 
-## May 4 charger recovery adjustment
+Mapped latest itinerary baseline: 3459.8 km, 54h 18m driving.
 
-- **May 4:** Borgarnes → Reykjavík → Borgarnes for the laptop charger, then Deildartunguhver/Reykholt and Hraunfossar/Barnafoss only if timing and energy are good.
-- **May 5:** Move the full Snæfellsnes Peninsula loop here: Arnarstapi-Hellnar, Kirkjufell/Grundarfjörður and optional Gerðuberg or Ytri Tunga.
+## Phase 1 — Wild West — Complete (May 3-5)
 
-## Phase 1: The Wild West (May 3-6)
+Base: **Borgarnes**. Mapped phase baseline: 624 km, 9h 41.
 
-Base camp: **Borgarnes**. Baseline mapped phase driving: 386 km, 5h 49.
+Completed Borgarnes base with charger recovery, Borgarfjörður geothermal stops and Snæfellsnes catch-up.
 
-- **Snæfellsnes Peninsula Loop**: 230-300 km scenic loop featuring Arnarstapi-Hellnar coastal path, lava fields, and Kirkjufell mountain.
-- **Geothermal Wonders**: Explore Deildartunguhver, Kleppjárnsreykir and nearby Borgarfjörður hot-spring country.
+- **Charger recovery handled**: Borgarnes → Reykjavík → Borgarnes, then Deildartunguhver/Reykholt and Hraunfossar/Barnafoss where timing allowed.
+- **Snæfellsnes loop**: Arnarstapi-Hellnar, Kirkjufell/Grundarfjörður and optional basalt/coastal stops moved into the catch-up day.
 
-## Phase 2: Capital of the North (May 6-8)
+## Phase 2 — North — Complete (May 6-8)
 
-Base camp: **Akureyri**. Baseline mapped phase driving: 453 km, 6h 56.
+Base: **Akureyri**. Mapped phase baseline: 1014 km, 17h 00.
 
-- **Akureyri Town Loop**: Waterfront, botanical gardens, viewpoints, cafés and light walking to keep daily movement goals on track.
-- **Mývatn & Goðafoss**: High-activity day with Goðafoss, Hverir, Dimmuborgir and optional Krafla/Leirhnjúkur if conditions allow.
+Completed Akureyri base with town recovery, Goðafoss, Mývatn geology, Bjarnaflag Geothermal Power Station and Krafla Power Station before the weather-forced southbound extension.
 
-## Phase 3: The Gateway South (May 8-10)
+- **Akureyri recovery base**: Town walk, harbor, café time and Forest Lagoon fit the colder-weather North Iceland day.
+- **Mývatn geology + power stations**: Goðafoss, Hverir/Námafjall, Dimmuborgir, Mývatn Nature Baths, Bjarnaflag Geothermal Power Station, Krafla Power Station and Krafla/Víti area.
 
-Base camp: **Selfoss**. Baseline mapped phase driving: 542 km, 9h 19.
+## Phase 3 — Phase 2 Extension to Selfoss (May 8-10)
 
-- **The Golden Circle Route**: 230-280 km circuit: Þingvellir tectonic-plate walks, Geysir geothermal area and Gullfoss.
-- **Reykjadalur Hot River**: 6-7 km hike from Hveragerði to bathe in a naturally warm river, if trail conditions are suitable.
+Base: **Selfoss**. Mapped phase baseline: 453 km, 6h 58.
 
-## Phase 4: The Deep South (May 10-12)
+Weather-adjusted route: continue the same Phase 2 Route 1 corridor south, extending it to Selfoss, then use Selfoss for compact add-on stops.
 
-Base camp: **Vík or Kirkjubæjarklaustur**. Baseline mapped phase driving: 304 km, 4h 36.
+- **Same Route 1 corridor as Phase 2**: Instead of a separate northern/eastern loop, stay on the proven Route 1 line from the Akureyri/Mývatn side and extend south toward Reykjavík/Selfoss.
+- **Selfoss add-ons after arrival**: Use Gullfoss, Kerið, Faxi, Hveragerði/Eyrarbakki, Seljalandsfoss, Skógafoss and Reynisfjara as weather/energy add-ons from the Selfoss base.
 
-- **The Waterfall Way**: Seljalandsfoss and Gljúfrabúi, Skógafoss stairs/trail, and optional Nauthúsagil canyon.
-- **Black Sands & Basalt**: Coastal walks at Reynisfjara and Dyrhólaey cliffs with basalt formations, birdlife, and surf caution.
+## Phase 4 — Deep South Big East Run (May 11)
 
-## Phase 5: The East & Return (May 12-14)
+Base: **Hvolsvöllur**. Mapped phase baseline: 690 km, 10h 13.
 
-Base camp: **Breiðdalsvík / Höfn**. Baseline mapped phase driving: 911 km, 13h 04.
+A single high-value South Coast push from Hvolsvöllur to Urriðafoss, Jökulsárlón, Diamond Beach and back west.
 
-- **Jökulsárlón Glacier Lagoon**: Walk among icebergs on black sand, with views of Vatnajökull ice cap and Diamond Beach.
-- **May 14: Return to Reykjavík**: Final transit back to the capital or KEF airport, with optional Fagradalsfjall/Reykjanes stop if time and conditions permit.
+- **Urriðafoss first**: Quick early stop for the missed high-flow waterfall before committing east on Route 1.
+- **Glacier lagoon priority**: Jökulsárlón and Diamond Beach first, then Reynisfjara, Skógafoss and Kvernufoss on the westbound return.
 
-## Route 1 turns and notes
+## Phase 5 — Reykjavík Return & Bonus Snæfellsnes (May 12-14)
 
-- **Phase 1 · May 4 recovery rule**: Because the charger recovery adds a Borgarnes–Reykjavík–Borgarnes round trip, keep May 4 to the Borgarfjörður geothermal loop after returning and move the full Snæfellsnes loop to May 5.
-- **Phase 1 · Reykjavík → Borgarnes**: Leave Reykjavík on Route 1 / Vesturlandsvegur through the Hvalfjörður tunnel corridor to Borgarnes.
-- **Phase 1 · Borgarnes → Snæfellsnes loop**: From Borgarnes, use Route 54 west toward Snæfellsnes. For Arnarstapi/Hellnar, turn onto Route 574; continue around to Grundarfjörður/Kirkjufell, then return east via Route 54/56 toward Borgarfjörður.
-- **Phase 1 · Borgarfjörður geothermal detour**: Use Route 50/518 area for Deildartunguhver, Kleppjárnsreykir and Reykholt, then rejoin Route 1 for the northbound drive.
-- **Phase 2 · Borgarnes/Borgarfjörður → Akureyri**: Follow Route 1 north and east across West/North Iceland to Akureyri. This is a long repositioning leg; charge/fuel before departure and again near major towns.
-- **Phase 2 · Akureyri → Goðafoss → Mývatn**: Stay on Route 1 east from Akureyri. Goðafoss is just off Route 1; continue to Reykjahlíð/Mývatn, then return to Akureyri by Route 1.
-- **Phase 3 · Akureyri → Selfoss**: Long southbound repositioning via Route 1 through the west/north corridor, then south to Selfoss. Treat this as a transit day with weather buffers.
-- **Phase 3 · Golden Circle from Selfoss**: Use Route 35/36/37/35 circuit depending direction: Selfoss → Þingvellir → Geysir → Gullfoss → back toward Hveragerði/Selfoss. Check exact navigation before leaving because several Golden Circle roads interconnect.
-- **Phase 3 · Reykjadalur**: From Selfoss, drive west on Route 1 to Hveragerði and use the Reykjadalur trailhead parking area; hike only if trail and weather conditions are good.
-- **Phase 4 · Selfoss → Waterfall Way**: Drive east on Route 1. Turn north on Route 249 / Þórsmerkurvegur for Seljalandsfoss and Gljúfrabúi, return to Route 1, then continue east to Skógafoss.
-- **Phase 4 · Black sands and Vík/Klaustur**: From Route 1, use Route 218 for Dyrhólaey and Route 215 for Reynisfjara, then continue east through Vík and lava/sandur landscapes toward Kirkjubæjarklaustur and Skaftafell.
-- **Phase 5 · Glacier lagoon → Höfn / Breiðdalsvík**: Continue east on Route 1 from Skaftafell to Jökulsárlón and Diamond Beach, then Höfn and the East Fjords corridor toward Breiðdalsvík.
-- **Phase 5 · Return to Reykjavík**: The mapped return from Breiðdalsvík follows the practical south-coast Route 1 return. Build in a large buffer, or break it overnight if weather/energy are poor.
+Base: **Reykjavík**. Mapped phase baseline: 678 km, 10h 26.
+
+Lava Centre and Reykjanes lighthouse detour on the Reykjavík return, then a Walter Mitty/Snæfellsnes day trip and city day.
+
+- **Hvolsvöllur → Reykjavík**: LAVA Centre before checkout, Garður Old Lighthouse detour, then Reykjavík harbor/church/city reset.
+- **May 13 Snæfellsnes day trip**: Stykkishólmur/Walter Mitty bridge, Kirkjufell and Arnarstapi-Hellnar from Reykjavík.
+
+## Day-by-day plan
+
+- **May 3 — Arrive Reykjavík → Borgarnes**: 76 km · 1h14. Drive to Borgarnes base, check in, evening walk and reset.
+- **May 4 — Charger recovery + Borgarfjörður**: 152 km charger round trip + local loop. Borgarnes → Reykjavík → Borgarnes for the laptop charger. Afternoon: Deildartunguhver, Reykholt and Hraunfossar/Barnafoss if timing allowed.
+- **May 5 — Snæfellsnes catch-up loop**: 230-300 km local loop. Arnarstapi-Hellnar coastal path, Kirkjufell/Grundarfjörður and optional Gerðuberg basalt cliffs.
+- **May 6 — Borgarnes → Akureyri**: ~286 km · 4h22 baseline. Route 1 north via Varmahlíð. Evening Akureyri town walk, harbor, cafés or Forest Lagoon.
+- **May 7 — Goðafoss + Mývatn geology**: ~168 km round trip baseline. Goðafoss, Lake Mývatn, Hverir/Námafjall, Dimmuborgir and Mývatn Nature Baths.
+- **May 8 — Bjarnaflag + Krafla power-station coverage**: Akureyri → Bjarnaflag → Krafla → Selfoss extension. Capture Bjarnaflag Geothermal Power Station, Krafla Power Station and Krafla/Víti area, then use the same practical Route 1 corridor as Phase 2 extended south toward Selfoss due to weather.
+- **May 9 — Arrive Selfoss via Phase 2 extension**: Route 1 southbound extension + optional arrival stops. Complete the weather-forced extension to Selfoss using the same Route 1 corridor as Phase 2. Add Seljalandsfoss, Skógafoss and Reynisfjara only as weather and energy allow after arrival.
+- **May 10 — Selfoss add-on day**: Compact Golden Circle / local loop from Selfoss. Treat Gullfoss, optional Faxi, Kerið, LÁ Art Museum, Greenhouse Café, Húsið Museum and dinner as add-ons from Selfoss rather than the main Phase 3 route.
+- **May 11 — Hvolsvöllur big east run**: Hvolsvöllur ↔ Jökulsárlón out-and-back. Leave early: Urriðafoss, Jökulsárlón, Diamond Beach, Reynisfjara, Skógafoss/Kvernufoss, then back to Hvolsvöllur.
+- **May 12 — LAVA Centre + return to Reykjavík**: Hvolsvöllur → Garður → Reykjavík. Morning LAVA Centre in Hvolsvöllur, checkout, west on Route 1, optional Garður Old Lighthouse, then Hallgrímskirkja, Harpa, Old Harbour and seafood dinner.
+- **May 13 — Snæfellsnes day trip from Reykjavík**: Reykjavík ↔ Stykkishólmur/Kirkjufell/Arnarstapi. Walter Mitty bridge/harbor in Stykkishólmur, Kirkjufell, Arnarstapi-Hellnar coastal path, back to Reykjavík for dinner/live music.
+- **May 14 — Reykjavík city day**: Local only. National Museum, Perlan, Settlement Exhibition, Laugavegur, Tjörnin and weather-dependent Nauthólsvík or live jazz/blues.
+
+## Route notes
+
+- **Phase 3 · Weather update: Phase 3 follows Phase 2 route plus extension**: Due to weather, Phase 3 uses the same practical Route 1 corridor as Phase 2 and simply extends it south to Selfoss. Golden Circle and South Coast items become optional add-ons from the Selfoss base rather than a separate primary route.
+- **Phase 2 · Power-station coverage added**: The May 8 north segment now shows Bjarnaflag Geothermal Power Station and Krafla Power Station as distinct visits, with Krafla/Víti as the nearby geology stop before the southbound extension.
+- **Phase 1 · Completed Phase 1 adjustment**: The charger recovery moved May 4 into a practical Borgarnes–Reykjavík–Borgarnes recovery day with Borgarfjörður geothermal stops, while the Snæfellsnes loop moved to May 5.
+- **Phase 2 · North Iceland cold-weather adjustment**: Akureyri stayed useful as a warm recovery base: town walk, harbor/cafés and Forest Lagoon, with Goðafoss/Mývatn kept to the strongest weather window.
+- **Phase 3 · Weather-forced southbound route**: Phase 3 is the weather-forced continuation of the Phase 2 Route 1 corridor, extended south to Selfoss. Keep side trips compact and optional.
+- **Phase 3 · May 10 Selfoss priority order**: Go to Gullfoss first while weather holds, then Faxi only if it fits, Kerið on the southbound return, and keep Hveragerði/Eyrarbakki culture stops as warm indoor options.
+- **Phase 4 · May 11 big east run rule**: Base at Hvolsvöllur. Start early, keep Urriðafoss short, prioritize Jökulsárlón and Diamond Beach, then use Reynisfjara, Skógafoss and Kvernufoss as westbound return stops only if energy and conditions stay good.
+- **Phase 5 · May 12 Reykjavík return**: Use the LAVA Centre before checkout, then return west on Route 1. Garður Old Lighthouse is optional and should be skipped if it threatens a relaxed Reykjavík arrival.
+- **Phase 5 · May 13 Walter Mitty day**: From Reykjavík, take Route 1 north and Route 54 west to Snæfellsnes for Stykkishólmur/Walter Mitty bridge, Kirkjufell and Arnarstapi-Hellnar, then return to Reykjavík.
