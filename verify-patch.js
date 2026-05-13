@@ -1,0 +1,11 @@
+const src = require('fs').readFileSync('app.js','utf8');
+const logic = src.substring(src.indexOf('\nconst iconSvg'));
+console.log('order:p.id in phaseCard :', logic.includes('order:${p.id}'));
+console.log('allMarkers declared     :', logic.includes('let allMarkers=[]'));
+console.log('allFeatures declared    :', logic.includes('let allFeatures=[]'));
+console.log('setPhaseFilter fn       :', logic.includes('function setPhaseFilter'));
+console.log('phase-filter-bar        :', logic.includes('phase-filter-bar'));
+console.log('allMarkers.push         :', logic.includes('allMarkers.push'));
+console.log('Grindavik in data       :', src.includes('Grindav'));
+console.log('sunrise/sunset          :', logic.includes('sunrise-sunset.org'));
+console.log('tab switching           :', logic.includes('data-map-tab'));
