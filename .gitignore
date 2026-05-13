@@ -6,4 +6,6 @@ Desktop.ini
 .env.*
 .localdev
 node_modules/
+package.json
+package-lock.json
 iceland-route-map/
