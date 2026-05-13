@@ -1,0 +1,10 @@
+const fs = require('fs');
+const html = fs.readFileSync('index.html', 'utf8');
+const mapIdx = html.indexOf("id='map'");
+console.log('=== AROUND MAP DIV ===');
+console.log(html.substring(mapIdx - 400, mapIdx + 200));
+console.log('\n=== SCRIPT TAGS ===');
+const scripts = [...html.matchAll(/<script[^>]*>/g)].map(m => m[0]);
+scripts.forEach(s => console.log(' ', s));
+console.log('\n=== CLOSING </body> AREA ===');
+console.log(html.substring(html.lastIndexOf('</section>') - 50, html.length));
