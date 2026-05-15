@@ -21,3 +21,29 @@ Removed from Phase 5 due to schedule constraints. High priority for a return tri
 - Total round trip: ~459 km / ~1 full day
 
 **To restore:** Add stops + legs back to `route-data.json`, run `node build-app.js`, redeploy.
+
+---
+
+### Húsið Museum / Eyrarbakki
+Removed from Phase 3 / May 10 add-on day due to schedule constraints.
+
+| Stop | Coords | Notes |
+|---|---|---|
+| Húsið Museum / Eyrarbakki | 63.8642, -21.1484 | Small coastal fishing village museum; the "House" museum with Icelandic heritage exhibits |
+
+**Original position:** Between Hveragerði and Hvolsvöllur on the south coast (old leg 29: Hveragerði → Húsið, leg 30: Húsið → Hvolsvöllur).
+
+**To restore:** Add stop back, re-split the merged Hveragerði→Hvolsvöllur leg into two legs via Húsið, re-run `node build-app.js`, redeploy.
+
+---
+
+### LAVA Centre (Hvolsvöllur)
+Removed from Phase 4 — drove straight from Hvolsvöllur to Reykjavík on May 12.
+
+| Stop | Coords | Notes |
+|---|---|---|
+| LAVA Centre | 63.7516, -20.2267 | Volcanic eruption exhibition museum in Hvolsvöllur. Highly rated, ~1 hr visit. |
+
+**Original position:** Hvolsvöllur → LAVA Centre (0.5 km) → Reykjavík. Was the last stop before Phase 4 ended at Reykjavík.
+
+**To restore:** Add stop + re-split the merged Hvolsvöllur→Reykjavík leg into two (via LAVA Centre), re-run `node build-app.js`, redeploy.
