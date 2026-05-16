@@ -6,6 +6,7 @@
  */
 const fs = require('fs');
 let src = fs.readFileSync('app.js', 'utf8');
+let html = fs.readFileSync('index.html', 'utf8');
 
 // ── 1. Replace popup HTML to include photo thumbnails ─────────────────────────
 const OLD_POPUP = `\`<div class="popup-title">\${h(stop.name)}</div><div class="popup-note"><strong>\${h(stop.type==='unplanned'?'📍 Unplanned stop':stop.type)}</strong><br>\${h(stop.note)}\${stop.photos&&stop.photos.length?\`<br><span class="popup-photos">📷 \${stop.photos.length} photos taken here</span>\`:''}</div>\``;
@@ -27,53 +28,19 @@ if (!src.includes(OLD_POPUP)) {
 }
 console.log('✓ Popup gallery HTML added');
 
-// ── 2. Inject lightbox overlay + logic before closing script ─────────────────
-const LIGHTBOX_CSS = `
-<style>
-#lb-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column}
-#lb-overlay.open{display:flex}
-#lb-img{max-width:92vw;max-height:82vh;border-radius:8px;object-fit:contain;box-shadow:0 8px 40px #000c}
-#lb-nav{display:flex;gap:2rem;margin-top:1rem;align-items:center}
-#lb-nav button{background:none;border:2px solid #fff8;color:#fff;border-radius:6px;padding:.4rem 1.2rem;font-size:1.3rem;cursor:pointer;transition:background .15s}
-#lb-nav button:hover{background:#fff2}
-#lb-counter{color:#fff9;font-size:.9rem;min-width:5rem;text-align:center}
-#lb-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
-</style>
-<div id="lb-overlay" role="dialog" aria-modal="true">
-  <button id="lb-close" aria-label="Close">&times;</button>
-  <img id="lb-img" src="" alt="" />
-  <div id="lb-nav">
-    <button id="lb-prev" aria-label="Previous">&#8592;</button>
-    <span id="lb-counter"></span>
-    <button id="lb-next" aria-label="Next">&#8594;</button>
-  </div>
-</div>
-<script>
-(function(){
-  let urls=[], idx=0;
-  function show(i){
-    idx=(i+urls.length)%urls.length;
-    document.getElementById('lb-img').src=urls[idx];
-    document.getElementById('lb-counter').textContent=(idx+1)+' / '+urls.length;
-  }
-  window.__openLightbox=function(u,i){urls=u;document.getElementById('lb-overlay').classList.add('open');show(i);};
-  document.getElementById('lb-close').onclick=function(){document.getElementById('lb-overlay').classList.remove('open');};
-  document.getElementById('lb-prev').onclick=function(){show(idx-1);};
-  document.getElementById('lb-next').onclick=function(){show(idx+1);};
-  document.getElementById('lb-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
-  document.addEventListener('keydown',function(e){
-    if(!document.getElementById('lb-overlay').classList.contains('open'))return;
-    if(e.key==='ArrowRight')show(idx+1);
-    if(e.key==='ArrowLeft')show(idx-1);
-    if(e.key==='Escape')document.getElementById('lb-overlay').classList.remove('open');
-  });
-})();
-</script>`;
+// ── 2. Inject lightbox overlay + logic into index.html before </body> ────────
+const LIGHTBOX = `<style>#lb-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column}#lb-overlay.open{display:flex}#lb-img{max-width:92vw;max-height:82vh;border-radius:8px;object-fit:contain;box-shadow:0 8px 40px #000c}#lb-nav{display:flex;gap:2rem;margin-top:1rem;align-items:center}#lb-nav button{background:none;border:2px solid #fff8;color:#fff;border-radius:6px;padding:.4rem 1.2rem;font-size:1.3rem;cursor:pointer;transition:background .15s}#lb-nav button:hover{background:#fff2}#lb-counter{color:#fff9;font-size:.9rem;min-width:5rem;text-align:center}#lb-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1}</style><div id='lb-overlay' role='dialog' aria-modal='true'><button id='lb-close' aria-label='Close'>&times;</button><img id='lb-img' src='' alt='' /><div id='lb-nav'><button id='lb-prev' aria-label='Previous'>&#8592;</button><span id='lb-counter'></span><button id='lb-next' aria-label='Next'>&#8594;</button></div></div><script>(function(){let urls=[],idx=0;function show(i){idx=(i+urls.length)%urls.length;document.getElementById('lb-img').src=urls[idx];document.getElementById('lb-counter').textContent=(idx+1)+' / '+urls.length;}window.__openLightbox=function(u,i){urls=u;document.getElementById('lb-overlay').classList.add('open');show(i);};document.getElementById('lb-close').onclick=function(){document.getElementById('lb-overlay').classList.remove('open');};document.getElementById('lb-prev').onclick=function(){show(idx-1);};document.getElementById('lb-next').onclick=function(){show(idx+1);};document.getElementById('lb-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});document.addEventListener('keydown',function(e){const o=document.getElementById('lb-overlay');if(!o.classList.contains('open'))return;if(e.key==='ArrowRight')show(idx+1);if(e.key==='ArrowLeft')show(idx-1);if(e.key==='Escape')o.classList.remove('open');});})();<\/script>`;
 
 const OLD_CLOSING = '</body>';
-if (!src.includes(OLD_CLOSING)) { console.error('Cannot find </body>'); process.exit(1); }
-src = src.replace(OLD_CLOSING, LIGHTBOX_CSS + '\n</body>');
-console.log('✓ Lightbox overlay injected');
+if (!html.includes(OLD_CLOSING)) { console.error('Cannot find </body> in index.html'); process.exit(1); }
+if (html.includes('lb-overlay')) {
+  console.log('  (lightbox already in index.html — skipping)');
+} else {
+  html = html.replace(OLD_CLOSING, LIGHTBOX + '</body>');
+  fs.writeFileSync('index.html', html);
+  console.log('✓ Lightbox injected into index.html');
+}
 
 fs.writeFileSync('app.js', src);
-console.log('app.js updated — run: node build-app.js to finalize');
+console.log('app.js updated');
+console.log('\nDone — run: node build-app.js then deploy');
