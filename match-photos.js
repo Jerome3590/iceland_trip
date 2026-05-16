@@ -37,20 +37,24 @@ function haversine(lat1, lon1, lat2, lon2) {
 
 // ── Parse exiftool CSV ────────────────────────────────────────────────────────
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
+  const lines = text.trim().split(/\r?\n/);
   const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-  return lines.slice(1).map(line => {
-    // Handle quoted fields
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    // RFC-4180 CSV: quoted fields, "" = escaped quote inside field
     const cols = [];
-    let cur = '', inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
+    let cur = '', inQ = false, i = 0;
+    while (i < line.length) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i += 2; continue; } // escaped quote
+        inQ = !inQ; i++; continue;
+      }
+      if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; i++; continue; }
+      cur += ch; i++;
     }
     cols.push(cur.trim());
     const obj = {};
-    headers.forEach((h, i) => obj[h] = cols[i] || '');
+    headers.forEach((h, idx) => obj[h] = cols[idx] || '');
     return obj;
   });
 }
@@ -58,17 +62,19 @@ function parseCSV(text) {
 // ── DMS → decimal helper (exiftool sometimes outputs DMS strings) ─────────────
 function toDec(val, ref) {
   if (!val) return null;
+  const r = (ref || '').trim().toUpperCase();
+  const negative = r === 'S' || r === 'W' || r === 'SOUTH' || r === 'WEST';
   // Already decimal
   if (/^-?\d+(\.\d+)?$/.test(val.trim())) {
     let n = parseFloat(val);
-    if (ref === 'S' || ref === 'W') n = -Math.abs(n);
+    if (negative) n = -Math.abs(n);
     return n;
   }
-  // DMS: "64 deg 8' 36.12\" N"
-  const m = val.match(/(\d+)\s*deg\s*(\d+)'\s*([\d.]+)"/);
+  // DMS: "64 deg 8' 55.97" N" or "64 deg 8' 55.97"
+  const m = val.match(/(\d+)\s*deg\s*(\d+)'\s*([\d.]+)/);
   if (!m) return null;
   let dec = parseFloat(m[1]) + parseFloat(m[2])/60 + parseFloat(m[3])/3600;
-  if (ref === 'S' || ref === 'W') dec = -dec;
+  if (negative) dec = -dec;
   return dec;
 }
 
@@ -90,8 +96,10 @@ const unmatched   = [];
 
 stops.forEach(s => { stopMatches[s.name] = []; });
 
+const VIDEO_EXT = /\.(mp4|mov|avi|m4v|mkv|wmv|3gp)$/i;
 let matched = 0;
 for (const photo of photos) {
+  if (VIDEO_EXT.test(photo.FileName)) continue;
   const lat = toDec(photo.GPSLatitude,  photo.GPSLatitudeRef);
   const lon = toDec(photo.GPSLongitude, photo.GPSLongitudeRef);
 

@@ -6,6 +6,14 @@ Desktop.ini
 .env.*
 .localdev
 node_modules/
-package.json
-package-lock.json
 iceland-route-map/
+
+# Photos — originals and converted web cache (large binary files)
+photos/
+photos-web/
+
+# Generated pipeline outputs
+photo-gps.csv
+photo-stops.json
+route-data-photos.json
+unmatched.json
