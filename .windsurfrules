@@ -1,0 +1,45 @@
+# Iceland Trip — Dev Rules
+
+## AWS / S3 / CloudFront
+
+- **S3 bucket**: `jerome-dixon.io`
+- **CloudFront distribution ID**: `E3MZK5HYTJ14P3`
+- **Canonical public URL base**: `https://jerome-dixon.io` (custom domain — use this for ALL photo URLs and asset references)
+- **DO NOT** use raw CloudFront domain (`*.cloudfront.net`) — the correct custom domain is `jerome-dixon.io`
+- Photo S3 prefix: `iceland_trip/photos/{stop-slug}/`
+- App assets prefix: `iceland_trip/`
+
+## Photo URL Construction
+
+Always use this constant in scripts:
+```js
+const CF = 'https://jerome-dixon.io';
+```
+Never hardcode a `*.cloudfront.net` domain. If you need to verify the domain, run:
+```
+aws cloudfront get-distribution --id E3MZK5HYTJ14P3 --query "Distribution.DomainName"
+```
+
+## Build & Deploy Sequence
+
+1. `node build-app.js` — injects fresh `route-data.json` into `app.js` (preserves all patches)
+2. `aws s3 cp app.js s3://jerome-dixon.io/iceland_trip/app.js`
+3. `aws s3 cp route-data.json s3://jerome-dixon.io/iceland_trip/route-data.json`
+4. `aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"`
+
+## Photo Matching
+
+- Matching radius: **3 miles** (nearest-stop-wins)
+- After adding new stops: run `node rematch-all.js` to redistribute photos
+- After rematch: run `node reupload-new-stops.js` to copy photos to canonical S3 paths
+- After reupload: run `node cleanup-s3.js --dry-run` then `node cleanup-s3.js` to remove stale files
+- Source manifest: `node ... > s3-manifest.txt` keeps S3 index current
+
+## Stop Slug Convention
+
+```js
+function slug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+```
+Special Icelandic characters (ð, ó, á, í, ú, þ, æ, ö) are replaced with `-` in slugs and S3 folder names.
