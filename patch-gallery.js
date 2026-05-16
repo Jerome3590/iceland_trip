@@ -13,7 +13,7 @@ const OLD_POPUP = `\`<div class="popup-title">\${h(stop.name)}</div><div class="
 
 const NEW_POPUP = `(()=>{
   const photoHtml=stop.photos&&stop.photos.length
-    ?'<div class="popup-gallery">'+stop.photos.slice(0,12).map((p,i)=>\`<img src="\${p.url}" alt="Photo \${i+1} at \${h(stop.name)}" loading="lazy" onclick="window.__openLightbox(\${JSON.stringify(stop.photos.map(x=>x.url))},\${i})" />\`).join('')+(stop.photos.length>12?\`<span class="popup-gallery-more">+\${stop.photos.length-12} more</span>\`:'')+'</div>'
+    ?(window.__pr=window.__pr||{},window.__pr[stop.name]=stop.photos.map(x=>x.url),'<div class="popup-gallery">'+stop.photos.slice(0,12).map((p,i)=>\`<img src="\${p.url}" alt="Photo \${i+1} at \${h(stop.name)}" loading="lazy" onclick="window.__openLightbox(window.__pr[\\''+stop.name.replace(/'/g,"\\\\'")+'\\'],\${i})" />\`).join('')+(stop.photos.length>12?\`<span class="popup-gallery-more">+\${stop.photos.length-12} more</span>\`:'')+'</div>')
     :'';
   return \`<div class="popup-title">\${h(stop.name)}</div><div class="popup-note"><strong>\${h(stop.type==='unplanned'?'📍 Unplanned stop':stop.type)}</strong><br>\${h(stop.note)}</div>\${photoHtml}\`;
 })()`;
