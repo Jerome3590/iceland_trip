@@ -34,3 +34,4 @@ console.log('  + centerTop auto-hide');
 console.log('  + tab switching (data-map-tab + window.__setIcelandMapTab)');
 console.log('  + async sunrise/sunset per day card');
 console.log('New app.js size:', (src.length/1024).toFixed(0), 'KB');
+

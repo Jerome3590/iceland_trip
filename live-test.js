@@ -96,3 +96,4 @@ const URL = 'https://jerome-dixon.io/iceland_trip/';
   await browser.close();
   console.log('\nTest complete.');
 })();
+

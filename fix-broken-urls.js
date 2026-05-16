@@ -5,7 +5,7 @@
  */
 const fs  = require('fs');
 const d   = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
-const CF  = 'https://d2q3a6n9jy3k2l.cloudfront.net';
+const CF  = 'https://jerome-dixon.io';
 
 // Build filename → S3 path map from manifest
 const manifest = fs.readFileSync('s3-manifest.txt', 'utf8')
@@ -46,3 +46,4 @@ console.log(`Missing: ${missing} (not on S3)`);
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('\nroute-data.json saved');
+

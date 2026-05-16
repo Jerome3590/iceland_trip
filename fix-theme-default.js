@@ -10,3 +10,4 @@ if (!src.includes(OLD)) { console.error('Theme toggle pattern not found'); proce
 src = src.replace(OLD, NEW);
 fs.writeFileSync('app.js', src);
 console.log('Done — theme defaults to light mode');
+

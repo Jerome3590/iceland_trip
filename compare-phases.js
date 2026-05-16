@@ -17,3 +17,4 @@ for (let ph = 1; ph <= 5; ph++) {
     console.log(`  → Planned but NO photos: ${missed.map(s=>s.name).join(', ')}`);
   }
 }
+

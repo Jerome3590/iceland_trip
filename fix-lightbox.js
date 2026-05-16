@@ -32,3 +32,4 @@ if (src.includes(OLD_GALLERY) && !src.includes('window.__pr=window.__pr')) {
 
 fs.writeFileSync('app.js', src);
 console.log('app.js patched');
+

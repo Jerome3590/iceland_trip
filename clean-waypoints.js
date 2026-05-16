@@ -27,3 +27,4 @@ const updated = todo.replace(
 );
 fs.writeFileSync('TODO.md', updated);
 console.log('TODO.md updated');
+

@@ -120,3 +120,4 @@ console.log('  Phase 5 legs:', p5.legs);
 console.log('  Total km:', d.totals.total_distance_km, '| Time:', d.totals.total_time_formatted);
 console.log('  Phase 5 stops:', d.stops.filter(s=>s.phase===5).map(s=>s.name));
 console.log('  Days:', d.days.map(d2=>`${d2.date}: ${d2.title}`));
+

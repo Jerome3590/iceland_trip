@@ -12,3 +12,4 @@ if (withGPS.length) {
   console.log('\nNo GPS data found — checking unmatched sample:');
   lines.slice(1,6).forEach(l => console.log(' ', l));
 }
+

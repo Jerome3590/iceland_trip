@@ -96,3 +96,4 @@ toAdd.forEach(s => {
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log(`\nAdded ${added} stops. Total: ${d.stops.length}`);
+

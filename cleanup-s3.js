@@ -8,7 +8,7 @@ const fs   = require('fs');
 const { execSync } = require('child_process');
 
 const DRY_RUN = process.argv.includes('--dry-run');
-const CF  = 'https://d2q3a6n9jy3k2l.cloudfront.net';
+const CF  = 'https://jerome-dixon.io';
 const S3  = 's3://jerome-dixon.io';
 
 const d = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
@@ -66,3 +66,4 @@ toDelete.forEach(key => {
 });
 
 console.log(`\nDeleted: ${deleted} | Failed: ${failed}`);
+

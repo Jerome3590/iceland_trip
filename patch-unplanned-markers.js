@@ -19,3 +19,4 @@ console.log('✓ Popup shows photo count for stops with photos');
 
 fs.writeFileSync('app.js', src);
 console.log('app.js updated');
+

@@ -9,3 +9,4 @@ console.log('allMarkers.push         :', logic.includes('allMarkers.push'));
 console.log('Grindavik in data       :', src.includes('Grindav'));
 console.log('sunrise/sunset          :', logic.includes('sunrise-sunset.org'));
 console.log('tab switching           :', logic.includes('data-map-tab'));
+

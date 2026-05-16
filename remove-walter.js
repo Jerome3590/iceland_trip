@@ -6,3 +6,4 @@ d.turns = d.turns.filter(t => !JSON.stringify(t).toLowerCase().includes('walter 
 console.log(`Removed ${before - d.turns.length} turn entry(s). Remaining: ${d.turns.length}`);
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
+

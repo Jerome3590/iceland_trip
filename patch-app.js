@@ -69,3 +69,4 @@ const output = `const routeData = ${routeData}${logic}`;
 fs.writeFileSync('app.js', output);
 console.log('✓ Rebuilt app.js with latest route-data.json (Grindavík included)');
 console.log('  New size:', (output.length / 1024).toFixed(0), 'KB');
+

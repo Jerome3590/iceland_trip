@@ -39,3 +39,4 @@ fileNames.forEach(f => {
 
   console.log(`  ${f.padEnd(20)} ${lat.toFixed(4)}, ${lon.toFixed(4)}  →  ${nearest} (${(minDist*0.621).toFixed(2)} mi)`);
 });
+

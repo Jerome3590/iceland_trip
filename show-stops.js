@@ -5,3 +5,4 @@ d.stops.forEach(s => {
   console.log(`[Ph${s.phase}] ${tag} ${String(n).padStart(3)}ph | ${s.name}`);
 });
 console.log('\nTotal stops:', d.stops.length);
+

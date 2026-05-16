@@ -96,3 +96,4 @@ d.stops.filter(s => !s.photos || s.photos.length === 0).forEach(s => {
     console.log(`  Closest unmatched: ${nearest.file} @ ${nearest.lat.toFixed(4)},${nearest.lon.toFixed(4)} (${nearest.nearestMi} mi from nearest stop)`);
   }
 });
+

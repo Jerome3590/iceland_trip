@@ -41,3 +41,4 @@ fs.writeFileSync('app.js', src);
 // Verify
 const check = src.indexOf('gallery-thumb');
 console.log('\nVerify img tag:', src.substring(check - 10, check + 100));
+

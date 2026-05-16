@@ -24,3 +24,4 @@ remaining.forEach(s => {
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('Total stops:', d.stops.length);
+

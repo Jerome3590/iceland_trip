@@ -24,7 +24,7 @@ function haversine(lat1,lon1,lat2,lon2){
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-const S3_BASE = 'https://d2q3a6n9jy3k2l.cloudfront.net/iceland_trip/photos';
+const S3_BASE = 'https://jerome-dixon.io/iceland_trip/photos';
 function slug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
@@ -86,3 +86,4 @@ console.log('\nMatched:', matched, '| Unmatched in radius:', unmatched);
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('\nroute-data.json saved');
+

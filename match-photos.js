@@ -154,3 +154,4 @@ for (const { stop, photos } of summary) {
 }
 fs.writeFileSync('route-data-photos.json', JSON.stringify(patched));
 console.log('Wrote route-data-photos.json — review then rename to route-data.json and run: node build-app.js');
+

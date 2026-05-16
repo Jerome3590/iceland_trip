@@ -44,3 +44,4 @@ if (html.includes('lb-overlay')) {
 fs.writeFileSync('app.js', src);
 console.log('app.js updated');
 console.log('\nDone — run: node build-app.js then deploy');
+

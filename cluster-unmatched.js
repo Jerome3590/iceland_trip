@@ -22,3 +22,4 @@ clusters.filter(c=>c.photos.length>2).forEach(c => {
   console.log(`  ${String(c.photos.length).padStart(4)} photos | ${c.lat.toFixed(4)}, ${c.lon.toFixed(4)} | e.g. ${c.photos[0].file}`);
 });
 console.log('\nSmall clusters (1-2 photos):', clusters.filter(c=>c.photos.length<=2).length);
+

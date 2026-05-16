@@ -47,3 +47,4 @@ if (!d.stops.find(s => s.name.toLowerCase().includes('keflaví') || s.name.toLow
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('\nPhase 5 final:', d.stops.filter(s => s.phase === 5).map(s => s.name));
+

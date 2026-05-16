@@ -8,3 +8,4 @@ const scripts = [...html.matchAll(/<script[^>]*>/g)].map(m => m[0]);
 scripts.forEach(s => console.log(' ', s));
 console.log('\n=== CLOSING </body> AREA ===');
 console.log(html.substring(html.lastIndexOf('</section>') - 50, html.length));
+

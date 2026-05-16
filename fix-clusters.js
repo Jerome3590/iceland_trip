@@ -50,3 +50,4 @@ if (bf) {
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('\nFinal stops:', d.stops.length);
 console.log('Unplanned stops:', d.stops.filter(s=>s.type==='unplanned').map(s=>`[Ph${s.phase}] ${s.name}`).join('\n  '));
+

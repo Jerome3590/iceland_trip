@@ -24,3 +24,4 @@ console.log('Fixed: GeoJSON source now uses features:allFeatures');
 const logic = src.substring(src.indexOf('\nconst iconSvg'));
 console.log('features:allFeatures in source:', logic.includes("features:allFeatures}"));
 console.log('No bare allFeatures} shorthand:', !logic.includes("type:'FeatureCollection',allFeatures}"));
+

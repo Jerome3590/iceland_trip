@@ -34,7 +34,7 @@ function slug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
 
-const CF = 'https://d2q3a6n9jy3k2l.cloudfront.net/iceland_trip/photos';
+const CF = 'https://jerome-dixon.io/iceland_trip/photos';
 
 // Build filename → existing S3 URL map from current route-data
 const existingUrls = {};
@@ -95,3 +95,4 @@ if (empty.length) {
 
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('\nroute-data.json saved');
+

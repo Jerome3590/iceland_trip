@@ -22,3 +22,4 @@ fs.writeFileSync('app.js', src);
 // Verify
 const check = src.indexOf('__openLightbox');
 console.log('Result:', JSON.stringify(src.substring(check - 5, check + 100)));
+

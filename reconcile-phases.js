@@ -97,3 +97,4 @@ if (!todo.includes('Skipped Stops')) {
 } else {
   console.log('\nTODO.md already has skipped stops section');
 }
+

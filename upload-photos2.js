@@ -118,3 +118,4 @@ const urlMap = {};
     console.log('CloudFront invalidated');
   } catch(e) { console.warn('CF invalidation skipped'); }
 })();
+

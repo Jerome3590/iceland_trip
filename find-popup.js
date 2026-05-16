@@ -5,3 +5,4 @@ if (i === -1) { console.log('Not found'); process.exit(); }
 let p = i;
 while (p > 0 && s[p] !== '`' && s.substring(p-2,p) !== '()') p--;
 console.log(s.substring(i - 100, i + 400));
+

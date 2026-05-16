@@ -29,3 +29,4 @@ if (fs.existsSync(path.dirname(mirrorPath))) {
   fs.writeFileSync(mirrorPath, output);
   console.log('Mirrored to iceland-route-map/app.js');
 }
+

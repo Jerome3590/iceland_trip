@@ -204,3 +204,4 @@ for (let i = 27; i < d.legs.length; i++) {
   const ph = d.phases.find(p => p.legs.includes(i+1));
   console.log(`  Leg ${i+1} [Ph${ph?.id||'?'}]: ${l.from} → ${l.to} | ${l.distance_km} km`);
 }
+

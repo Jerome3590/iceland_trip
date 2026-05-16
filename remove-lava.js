@@ -78,3 +78,4 @@ for (let i = 34; i < d.legs.length; i++) {
   const l = d.legs[i];
   console.log(`  Leg ${i+1} [Ph${ph?.id}]: ${l.from} → ${l.to} | ${l.distance_km} km`);
 }
+

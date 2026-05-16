@@ -8,7 +8,7 @@ const fs   = require('fs');
 const { execSync } = require('child_process');
 
 const d   = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
-const CF  = 'https://d2q3a6n9jy3k2l.cloudfront.net';
+const CF  = 'https://jerome-dixon.io';
 const S3  = 's3://jerome-dixon.io';
 
 function slug(name) {
@@ -68,3 +68,4 @@ NEW_STOP_NAMES.forEach(stopName => {
 console.log(`\nTotal copied: ${totalCopied} | Already OK: ${totalSkipped}`);
 fs.writeFileSync('route-data.json', JSON.stringify(d));
 console.log('route-data.json saved');
+

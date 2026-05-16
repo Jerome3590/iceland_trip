@@ -81,3 +81,4 @@ console.log(`  Via80%: [${c[Math.floor(c.length*0.80)]}]`);
 console.log(`  Via90%: [${c[Math.floor(c.length*0.90)]}]`);
 console.log(`  End   : [${c[c.length-1]}]  (Selfoss)`);
 console.log(`New totals: ${data.totals.distance_km} km, ${data.totals.time_min} min`);
+

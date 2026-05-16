@@ -8,3 +8,4 @@ kef.lat = 64.0080;
 kef.lon = -22.5565;
 console.log('New pin:', kef.lat, kef.lon);
 fs.writeFileSync('route-data.json', JSON.stringify(d));
+

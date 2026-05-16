@@ -44,3 +44,4 @@ console.log('✓ Card click + keyboard handler added');
 
 fs.writeFileSync('app.js', src);
 console.log('app.js updated');
+

@@ -47,3 +47,4 @@ clusters.forEach(c => {
   console.log(`  2nd: ${scored[1].name} (${scored[1].dist.toFixed(1)} km)`);
   console.log();
 });
+
