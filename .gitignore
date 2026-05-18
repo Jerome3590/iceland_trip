@@ -12,6 +12,9 @@ iceland-route-map/
 photos/
 photos-web/
 
+# Local only — will migrate to private repo
+LESSONS_LEARNED.md
+
 # Generated pipeline outputs
 photo-gps.csv
 photo-stops.json

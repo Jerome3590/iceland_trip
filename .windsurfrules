@@ -35,6 +35,20 @@ aws cloudfront get-distribution --id E3MZK5HYTJ14P3 --query "Distribution.Domain
 - After reupload: run `node cleanup-s3.js --dry-run` then `node cleanup-s3.js` to remove stale files
 - Source manifest: `node ... > s3-manifest.txt` keeps S3 index current
 
+## Multi-Project Hosting on jerome-dixon.io
+
+The S3 bucket hosts multiple projects. **Every project prefix needs its own `s3:GetObject` bucket policy statement** — missing it causes silent 403 Forbidden.
+
+Current allowed prefixes:
+- `iceland_trip/*`
+- `vcu/pgx-risk-calculator/*`
+
+**When adding a new project:**
+1. Upload to `s3://jerome-dixon.io/<project-prefix>/`
+2. Add statement to bucket policy: `"Resource": "arn:aws:s3:::jerome-dixon.io/<project-prefix>/*"`
+3. Verify immediately: `Invoke-WebRequest "https://jerome-dixon.io/<project-prefix>/" -Method Head | Select-Object StatusCode` → must be `200`
+4. Invalidate: `aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/<project-prefix>/*"`
+
 ## Stop Slug Convention
 
 ```js
