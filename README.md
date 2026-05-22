@@ -37,6 +37,17 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 | 4 | Deep South Big East Run | May 11–12 | Hvolsvöllur → Reykjavík |
 | 5 | Reykjavík Return & Departure | May 13–15 | Reykjavík → KEF |
 
+## Required Inputs
+
+This project has two required inputs. Everything else is generated from them.
+
+| Input | What it is | Used by |
+|---|---|---|
+| `docs/trip-plan.md` | **Markdown itinerary** — waypoints, phases, days, route notes | `python scripts/build_route_data.py` → `data/route-data.json` → `website/app.js` |
+| **Google Photos album** | **Photo album** — HEIC photos with embedded GPS EXIF | `rclone` download → `exiftool` GPS extract → `pipeline/1-5` → S3 |
+
+---
+
 ## File Structure
 
 | File/Folder | Purpose |
@@ -51,21 +62,36 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 | `pipeline/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
 | `build-app.js` | Bridge: `data/route-data.json` → `website/app.js` |
 | `scripts/build_route_data.py` | **Regenerate `route-data.json` from scratch** via OSRM routing API |
+| `docs/trip-plan.md` | **Required input #1** — markdown itinerary (waypoints, phases, days, notes) |
 | `docs/build-route-data.md` | How to add stops, force waypoints, run the script |
-| `docs/` | Itinerary, pipeline docs, TODO, schema reference |
 | `docs/route-data-schema.md` | **Schema guide** — how to add stops, legs, phases |
 
 ## Dev Workflow
 
-**To regenerate `data/route-data.json` from scratch** (re-queries OSRM for all leg geometries):
+### Input 1 — Edit the itinerary
+
+All route changes start in `docs/trip-plan.md`. Edit the markdown, then regenerate:
+
 ```powershell
 pip install -r scripts/requirements.txt
-python scripts/build_route_data.py
+python scripts/build_route_data.py   # reads trip-plan.md → writes data/route-data.json + website/app.js
 ```
 
-**After editing `data/route-data.json`:**
+### Input 2 — Add or update photos
+
+Photos come from a Google Photos album. See `docs/photos-pipeline.md` for full steps.
+
 ```powershell
-node build-app.js        # rebuilds website/app.js with fresh route data
+rclone copy "google-photos:Iceland Trip" photos/"Iceland Trip"   # download album
+exiftool -csv ... photos/ > data/photo-gps.csv                   # extract GPS
+node pipeline/1-match-photos.js                                   # match to stops
+node pipeline/2-upload-photos.js                                  # convert + upload to S3
+```
+
+### Quick rebuild (route-data edits only, no OSRM re-query)
+
+```powershell
+node build-app.js        # rebuilds website/app.js from data/route-data.json
 ```
 
 **Deploy to S3 + CloudFront:**
