@@ -20,3 +20,8 @@ photo-gps.csv
 photo-stops.json
 route-data-photos.json
 unmatched.json
+s3-manifest.txt
+
+# Archive — applied one-offs, not needed in active workspace
+# (kept in repo history via git, not deleted)
+# archive/ is committed but excluded from active tracking concerns

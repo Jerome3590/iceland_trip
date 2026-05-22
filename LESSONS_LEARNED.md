@@ -49,6 +49,55 @@ Operational notes from building and maintaining the Iceland Ring Road expedition
 2. Confirm POST returns 200 and JSON with `elements`.
 3. If Overpass fails, confirm the summary text switches to cached or curated fallback (see `refreshStations()` in `charging-map.js`).
 
+## Hosting multiple projects on the same S3 bucket / CloudFront domain
+
+### Problem encountered
+The S3 bucket (`jerome-dixon.io`) hosts multiple independent projects under different key prefixes:
+- `iceland_trip/` — Iceland expedition map
+- `vcu/pgx-risk-calculator/` — PGX clinical risk dashboard
+- `uva/` — UVA research notebooks
+
+When the bucket policy was set up, only the first project's prefix was granted public read access:
+```json
+{ "Resource": "arn:aws:s3:::jerome-dixon.io/iceland_trip/*" }
+```
+Every other path returned **403 Forbidden**, even though the objects existed and were correctly uploaded.
+
+### Rule: add a policy statement per project prefix
+
+Each hosted project needs its own `s3:GetObject` statement. After adding a project, verify it immediately:
+```powershell
+Invoke-WebRequest "https://jerome-dixon.io/<project-path>/" -Method Head -UseBasicParsing | Select-Object StatusCode
+# Must return 200; 403 = missing bucket policy statement
+```
+
+Current policy covers:
+| Prefix | Sid |
+|--------|-----|
+| `iceland_trip/*` | `PublicReadGetIcelandTrip` |
+| `vcu/pgx-risk-calculator/*` | `PublicReadGetPGXDashboard` |
+
+### Rule: use the custom domain — never a raw CloudFront URL
+
+The CloudFront distribution `E3MZK5HYTJ14P3` serves `jerome-dixon.io`. Always use:
+```js
+const CF = 'https://jerome-dixon.io';
+```
+Do **not** hardcode the raw `*.cloudfront.net` domain. The actual CF domain can be verified with:
+```
+aws cloudfront get-distribution --id E3MZK5HYTJ14P3 --query "Distribution.DomainName"
+```
+Using the wrong raw domain causes all asset URLs to silently 404 in production.
+
+### Checklist when adding a new project to the bucket
+
+1. Upload files to `s3://jerome-dixon.io/<project-prefix>/`
+2. Add a new `s3:GetObject` statement for `arn:aws:s3:::jerome-dixon.io/<project-prefix>/*`
+3. Confirm `200 OK` via `Invoke-WebRequest` before sharing the URL
+4. Invalidate CloudFront if previously cached: `aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/<project-prefix>/*"`
+
+---
+
 ## Deploy reminders
 
 - After changing `app.js`, `route-data.json`, or `itinerary.md`, remember **`app.js` embeds `routeData`**—regenerate or paste from `route-data.json` if you edit JSON only.
