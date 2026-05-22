@@ -1,76 +1,173 @@
 import json
+import re
 import time
 import pathlib
 import requests
 
 
 PROJECT_DIR = pathlib.Path(__file__).parent.parent  # repo root
+TRIP_PLAN_PATH = PROJECT_DIR / "docs" / "trip-plan.md"
 ROUTE_DATA_PATH = PROJECT_DIR / "data" / "route-data.json"
 APP_JS_PATH = PROJECT_DIR / "website" / "app.js"
-ITINERARY_MD_PATH = PROJECT_DIR / "docs" / "itinerary.md"
 
 OSRM_BASE = "https://router.project-osrm.org/route/v1/driving/"
 
 
-# Waypoints are stored as: name, longitude, latitude, phase.
-POINTS = [
-    ("Reykjavík", -21.9426, 64.1466, 1),
-    ("Borgarnes", -21.9225, 64.5383, 1),
-    ("Reykjavík charger recovery", -21.9426, 64.1466, 1),
-    ("Borgarnes", -21.9225, 64.5383, 1),
-    ("Deildartunguhver / Reykholt", -21.4106, 64.6636, 1),
-    ("Hraunfossar / Barnafoss", -20.9775, 64.7014, 1),
-    ("Borgarnes", -21.9225, 64.5383, 1),
-    ("Arnarstapi / Hellnar", -23.6285, 64.7663, 1),
-    ("Kirkjufell / Grundarfjörður", -23.3050, 64.9417, 1),
-    ("Borgarnes", -21.9225, 64.5383, 1),
-    ("Akureyri", -18.0878, 65.6835, 2),
-    ("Goðafoss", -17.5502, 65.6828, 2),
-    ("Mývatn / Hverir", -16.8081, 65.6415, 2),
-    ("Dimmuborgir", -16.9109, 65.5919, 2),
-    ("Mývatn Nature Baths", -16.8477, 65.6309, 2),
-    ("Akureyri", -18.0878, 65.6835, 2),
-    ("Bjarnaflag Geothermal Power Station", -16.8460, 65.6400, 2),
-    ("Krafla Power Station", -16.7788, 65.7045, 2),
-    ("Krafla / Víti area", -16.7792, 65.7175, 2),
-    # This leg is forced via Reykjavík using ROUTE_OVERRIDES below.
-    ("Selfoss via Reykjavík", -20.9971, 63.9334, 3),
-    ("Seljalandsfoss / Gljúfrabúi", -19.9886, 63.6156, 3),
-    ("Skógafoss", -19.5114, 63.5321, 3),
-    ("Reynisfjara", -19.0450, 63.4040, 3),
-    ("Selfoss", -20.9971, 63.9334, 3),
-    ("Gullfoss", -20.1200, 64.3270, 3),
-    ("Faxi / Vatnsleysufoss", -20.4458, 64.2256, 3),
-    ("Kerið", -20.8851, 64.0413, 3),
-    ("Selfoss", -20.9971, 63.9334, 3),
-    ("LÁ Art Museum / Hveragerði", -21.1889, 64.0006, 3),
-    ("Húsið Museum / Eyrarbakki", -21.1484, 63.8642, 3),
-    ("Hvolsvöllur", -20.2240, 63.7526, 4),
-    ("Urriðafoss", -20.6725, 63.9242, 4),
-    ("Jökulsárlón", -16.2306, 64.0479, 4),
-    ("Diamond Beach", -16.1773, 64.0438, 4),
-    ("Reynisfjara", -19.0450, 63.4040, 4),
-    ("Skógafoss / Kvernufoss", -19.5114, 63.5321, 4),
-    ("Hvolsvöllur", -20.2240, 63.7526, 4),
-    ("LAVA Centre", -20.2267, 63.7516, 5),
-    ("Garður Old Lighthouse", -22.6877, 64.0819, 5),
-    ("Reykjavík", -21.9426, 64.1466, 5),
-    ("Stykkishólmur / Walter Mitty Bridge", -22.7297, 65.0757, 5),
-    ("Kirkjufell", -23.3050, 64.9417, 5),
-    ("Arnarstapi / Hellnar", -23.6285, 64.7663, 5),
-    ("Reykjavík", -21.9426, 64.1466, 5),
-]
+# ── Markdown input parser ─────────────────────────────────────────────────────
+
+def _split_sections(text):
+    """Split markdown into top-level ## sections. Returns dict: name -> content."""
+    sections = {}
+    current = None
+    buf = []
+    for line in text.splitlines():
+        if line.startswith("## "):
+            if current:
+                sections[current] = "\n".join(buf)
+            current = line[3:].strip()
+            buf = []
+        elif current is not None:
+            buf.append(line)
+    if current:
+        sections[current] = "\n".join(buf)
+    return sections
 
 
-# Force specific legs through required waypoints.
-# Key format: (from_name, to_name).
-ROUTE_OVERRIDES = {
-    ("Krafla / Víti area", "Selfoss via Reykjavík"): [
-        ("Krafla / Víti area", -16.7792, 65.7175),
-        ("Reykjavík", -21.9426, 64.1466),
-        ("Selfoss via Reykjavík", -20.9971, 63.9334),
-    ]
-}
+def _split_subsections(text):
+    """Split a section into ### subsections. Returns list of (header, content)."""
+    subs = []
+    current_h = None
+    buf = []
+    for line in text.splitlines():
+        if line.startswith("### "):
+            if current_h is not None:
+                subs.append((current_h, "\n".join(buf).strip()))
+            current_h = line[4:].strip()
+            buf = []
+        elif current_h is not None:
+            buf.append(line)
+    if current_h is not None:
+        subs.append((current_h, "\n".join(buf).strip()))
+    return subs
+
+
+def parse_waypoints(text):
+    """Parse ## Waypoints table → list of (name, lon, lat, phase)."""
+    points = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("|---") or line.startswith("| Name") or line.startswith("<!--"):
+            continue
+        if line.startswith("|"):
+            cols = [c.strip() for c in line.strip("|").split("|")]
+            if len(cols) >= 4:
+                try:
+                    points.append((cols[0], float(cols[1]), float(cols[2]), int(cols[3])))
+                except ValueError:
+                    pass
+    return points
+
+
+def parse_overrides(text):
+    """Parse ## Route Overrides → dict: (from, to) -> [(name, lon, lat), ...]."""
+    overrides = {}
+    for header, content in _split_subsections(text):
+        m = re.match(r"\((.+?)\)\s*(?:→|->)\s*\((.+?)\)", header)
+        if not m:
+            continue
+        key = (m.group(1).strip(), m.group(2).strip())
+        wps = []
+        for line in content.splitlines():
+            line = line.strip().lstrip("- ")
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) >= 3:
+                try:
+                    wps.append((parts[0], float(parts[1]), float(parts[2])))
+                except ValueError:
+                    pass
+        if wps:
+            overrides[key] = wps
+    return overrides
+
+
+def parse_phases(text):
+    """Parse ## Phases subsections → list of phase dicts (without legs)."""
+    phases = []
+    for header, content in _split_subsections(text):
+        parts = [p.strip() for p in header.split("|")]
+        if len(parts) < 5:
+            continue
+        phase_id, name, dates, base, color = int(parts[0]), parts[1], parts[2], parts[3], parts[4]
+        summary_lines, items = [], []
+        for line in content.splitlines():
+            line = line.strip()
+            if not line or line.startswith("<!--"):
+                continue
+            m = re.match(r"[-*]\s+\*\*(.+?)\*\*:\s*(.+)", line)
+            if m:
+                items.append({"title": m.group(1), "desc": m.group(2)})
+            else:
+                summary_lines.append(line)
+        phases.append({
+            "id": phase_id,
+            "name": name,
+            "dates": dates,
+            "base": base,
+            "color": color,
+            "summary": " ".join(summary_lines),
+            "items": items,
+        })
+    return phases
+
+
+def parse_days(text):
+    """Parse ## Days subsections → list of day dicts."""
+    days = []
+    for header, content in _split_subsections(text):
+        parts = [p.strip() for p in header.split("|")]
+        if len(parts) < 3:
+            continue
+        date, phase, title = parts[0], int(parts[1]), parts[2]
+        drive, plan_lines = "", []
+        for line in content.splitlines():
+            line = line.strip()
+            if not line or line.startswith("<!--"):
+                continue
+            m = re.match(r"\*\*Drive\*\*:\s*(.+)", line)
+            if m:
+                drive = m.group(1)
+            else:
+                plan_lines.append(line)
+        days.append({"date": date, "phase": phase, "title": title,
+                     "drive": drive, "plan": " ".join(plan_lines)})
+    return days
+
+
+def parse_turns(text):
+    """Parse ## Route Notes subsections → list of turn dicts."""
+    turns = []
+    for header, content in _split_subsections(text):
+        parts = [p.strip() for p in header.split("|")]
+        if len(parts) < 2:
+            continue
+        phase, title = int(parts[0]), parts[1]
+        note_lines = [l.strip() for l in content.splitlines()
+                      if l.strip() and not l.strip().startswith("<!--")]
+        turns.append({"phase": phase, "title": title, "text": " ".join(note_lines)})
+    return turns
+
+
+def parse_trip_plan(md_path):
+    """Read the markdown trip plan and return all structured data."""
+    text = md_path.read_text(encoding="utf-8")
+    sections = _split_sections(text)
+    return (
+        parse_waypoints(sections.get("Waypoints", "")),
+        parse_overrides(sections.get("Route Overrides", "")),
+        parse_phases(sections.get("Phases", "")),
+        parse_days(sections.get("Days", "")),
+        parse_turns(sections.get("Route Notes", "")),
+    )
 
 
 def osrm_route(points):
@@ -107,20 +204,20 @@ def extract_steps(route):
     return steps
 
 
-def build_legs():
+def build_legs(points, route_overrides):
     legs = []
 
-    for idx in range(len(POINTS) - 1):
-        a = POINTS[idx]
-        b = POINTS[idx + 1]
+    for idx in range(len(points) - 1):
+        a = points[idx]
+        b = points[idx + 1]
 
         from_name, from_lon, from_lat, _from_phase = a
         to_name, to_lon, to_lat, to_phase = b
 
         override_key = (from_name, to_name)
 
-        if override_key in ROUTE_OVERRIDES:
-            route_points = ROUTE_OVERRIDES[override_key]
+        if override_key in route_overrides:
+            route_points = route_overrides[override_key]
             via = [p[0] for p in route_points[1:-1]]
         else:
             route_points = [
@@ -171,104 +268,12 @@ def build_phase_leg_index(legs):
     return phase_legs
 
 
-def build_phases(phase_legs):
-    return [
-        {
-            "id": 1,
-            "name": "Wild West - Complete",
-            "dates": "May 3-5",
-            "base": "Borgarnes",
-            "color": "#0c6fa8",
-            "legs": phase_legs[1],
-            "summary": "Completed Borgarnes base with charger recovery, Borgarfjörður geothermal stops and Snæfellsnes catch-up.",
-            "items": [
-                {
-                    "title": "Charger recovery handled",
-                    "desc": "Borgarnes → Reykjavík → Borgarnes, then Deildartunguhver/Reykholt and Hraunfossar/Barnafoss where timing allowed.",
-                },
-                {
-                    "title": "Snæfellsnes loop",
-                    "desc": "Arnarstapi-Hellnar, Kirkjufell/Grundarfjörður and optional basalt/coastal stops moved into the catch-up day.",
-                },
-            ],
-        },
-        {
-            "id": 2,
-            "name": "North - Complete",
-            "dates": "May 6-8",
-            "base": "Akureyri",
-            "color": "#148b63",
-            "legs": phase_legs[2],
-            "summary": "Completed Akureyri base with town recovery, Goðafoss, Mývatn geology, Bjarnaflag Geothermal Power Station and Krafla Power Station.",
-            "items": [
-                {
-                    "title": "Akureyri recovery base",
-                    "desc": "Town walk, harbor, café time and Forest Lagoon fit the colder-weather North Iceland day.",
-                },
-                {
-                    "title": "Mývatn geology + power stations",
-                    "desc": "Goðafoss, Hverir/Námafjall, Dimmuborgir, Mývatn Nature Baths, Bjarnaflag Geothermal Power Station, Krafla Power Station and Krafla/Víti area.",
-                },
-            ],
-        },
-        {
-            "id": 3,
-            "name": "Phase 2 Extension to Selfoss",
-            "dates": "May 8-10",
-            "base": "Selfoss",
-            "color": "#f0b526",
-            "legs": phase_legs[3],
-            "summary": "Weather-adjusted route: continue the same Phase 2 Route 1 corridor from the Krafla/Mývatn side, route through Reykjavík, and then extend south/east to Selfoss for compact add-on stops.",
-            "items": [
-                {
-                    "title": "Same Route 1 corridor as Phase 2",
-                    "desc": "Stay on the practical Route 1 corridor from the Akureyri/Mývatn side, force Reykjavík as the routing waypoint, then continue to Selfoss.",
-                },
-                {
-                    "title": "Selfoss add-ons after arrival",
-                    "desc": "Use Gullfoss, Kerið, Faxi, Hveragerði/Eyrarbakki, Seljalandsfoss, Skógafoss and Reynisfjara as weather/energy add-ons from the Selfoss base.",
-                },
-            ],
-        },
-        {
-            "id": 4,
-            "name": "Deep South Big East Run",
-            "dates": "May 11",
-            "base": "Hvolsvöllur",
-            "color": "#8f3d97",
-            "legs": phase_legs[4],
-            "summary": "A single high-value South Coast push from Hvolsvöllur to Urriðafoss, Jökulsárlón, Diamond Beach and back west.",
-            "items": [
-                {
-                    "title": "Urriðafoss first",
-                    "desc": "Quick early stop for the missed high-flow waterfall before committing east on Route 1.",
-                },
-                {
-                    "title": "Glacier lagoon priority",
-                    "desc": "Jökulsárlón and Diamond Beach first, then Reynisfjara, Skógafoss and Kvernufoss on the westbound return.",
-                },
-            ],
-        },
-        {
-            "id": 5,
-            "name": "Reykjavík Return & Bonus Snæfellsnes",
-            "dates": "May 12-14",
-            "base": "Reykjavík",
-            "color": "#10a8bf",
-            "legs": phase_legs[5],
-            "summary": "Lava Centre and Reykjanes lighthouse detour on the Reykjavík return, then a Walter Mitty/Snæfellsnes day trip and city day.",
-            "items": [
-                {
-                    "title": "Hvolsvöllur → Reykjavík",
-                    "desc": "LAVA Centre before checkout, Garður Old Lighthouse detour, then Reykjavík harbor/church/city reset.",
-                },
-                {
-                    "title": "May 13 Snæfellsnes day trip",
-                    "desc": "Stykkishólmur/Walter Mitty bridge, Kirkjufell and Arnarstapi-Hellnar from Reykjavík.",
-                },
-            ],
-        },
-    ]
+def build_phases(phases_meta, phase_legs):
+    """Merge parsed phase metadata with computed leg indices."""
+    result = []
+    for p in phases_meta:
+        result.append({**p, "legs": phase_legs.get(p["id"], [])})
+    return result
 
 
 def infer_stop_type(name):
@@ -297,245 +302,73 @@ def infer_stop_type(name):
     return "stop"
 
 
-def build_stops():
+def build_stops(points):
     stops = []
     seen = set()
-
-    for name, lon, lat, phase in POINTS:
+    for name, lon, lat, phase in points:
         key = (name, phase)
         if key in seen:
             continue
-
         seen.add(key)
-
-        stops.append(
-            {
-                "name": name,
-                "lat": lat,
-                "lon": lon,
-                "type": infer_stop_type(name),
-                "phase": phase,
-                "note": f"Phase {phase} latest-itinerary stop.",
-            }
-        )
-
-    stops.append(
-        {
-            "name": "Reykjavík waypoint for Phase 3 extension",
-            "lat": 64.1466,
-            "lon": -21.9426,
-            "type": "route waypoint",
-            "phase": 3,
-            "note": "Required waypoint forcing Leg 19 to use the practical Route 1 corridor through Reykjavík before continuing to Selfoss.",
-        }
-    )
-
+        stops.append({
+            "name": name,
+            "lat": lat,
+            "lon": lon,
+            "type": infer_stop_type(name),
+            "phase": phase,
+            "note": f"Phase {phase} stop.",
+        })
     return stops
 
 
-def build_days():
-    return [
-        {
-            "date": "May 3",
-            "phase": 1,
-            "title": "Arrive Reykjavík → Borgarnes",
-            "drive": "76 km · 1h14",
-            "plan": "Drive to Borgarnes base, check in, evening walk and reset.",
-        },
-        {
-            "date": "May 4",
-            "phase": 1,
-            "title": "Charger recovery + Borgarfjörður",
-            "drive": "152 km charger round trip + local loop",
-            "plan": "Borgarnes → Reykjavík → Borgarnes for the laptop charger. Afternoon: Deildartunguhver, Reykholt and Hraunfossar/Barnafoss if timing allowed.",
-        },
-        {
-            "date": "May 5",
-            "phase": 1,
-            "title": "Snæfellsnes catch-up loop",
-            "drive": "230-300 km local loop",
-            "plan": "Arnarstapi-Hellnar coastal path, Kirkjufell/Grundarfjörður and optional Gerðuberg basalt cliffs.",
-        },
-        {
-            "date": "May 6",
-            "phase": 2,
-            "title": "Borgarnes → Akureyri",
-            "drive": "~286 km · 4h22 baseline",
-            "plan": "Route 1 north via Varmahlíð. Evening Akureyri town walk, harbor, cafés or Forest Lagoon.",
-        },
-        {
-            "date": "May 7",
-            "phase": 2,
-            "title": "Goðafoss + Mývatn geology",
-            "drive": "~168 km round trip baseline",
-            "plan": "Goðafoss, Lake Mývatn, Hverir/Námafjall, Dimmuborgir and Mývatn Nature Baths.",
-        },
-        {
-            "date": "May 8",
-            "phase": 3,
-            "title": "Power stations, then Phase 3 extension via Reykjavík",
-            "drive": "Akureyri → Bjarnaflag → Krafla, then Krafla → Reykjavík → Selfoss",
-            "plan": "Capture Bjarnaflag Geothermal Power Station, Krafla Power Station and Krafla/Víti area as Phase 2 coverage. Leg 19 then forces the practical Route 1 corridor through Reykjavík before continuing to Selfoss as the Phase 3 weather extension.",
-        },
-        {
-            "date": "May 9",
-            "phase": 3,
-            "title": "Arrive Selfoss via Phase 2 extension",
-            "drive": "Route 1 southbound extension + optional arrival stops",
-            "plan": "Complete the weather-forced extension to Selfoss using the same Route 1 corridor as Phase 2. Add Seljalandsfoss, Skógafoss and Reynisfjara only as weather and energy allow after arrival.",
-        },
-        {
-            "date": "May 10",
-            "phase": 3,
-            "title": "Selfoss add-on day",
-            "drive": "Compact Golden Circle / local loop from Selfoss",
-            "plan": "Treat Gullfoss, optional Faxi, Kerið, LÁ Art Museum, Greenhouse Café, Húsið Museum and dinner as add-ons from Selfoss rather than the main Phase 3 route.",
-        },
-        {
-            "date": "May 11",
-            "phase": 4,
-            "title": "Hvolsvöllur big east run",
-            "drive": "Hvolsvöllur ↔ Jökulsárlón out-and-back",
-            "plan": "Leave early: Urriðafoss, Jökulsárlón, Diamond Beach, Reynisfjara, Skógafoss/Kvernufoss, then back to Hvolsvöllur.",
-        },
-        {
-            "date": "May 12",
-            "phase": 5,
-            "title": "LAVA Centre + return to Reykjavík",
-            "drive": "Hvolsvöllur → Garður → Reykjavík",
-            "plan": "Morning LAVA Centre in Hvolsvöllur, checkout, west on Route 1, optional Garður Old Lighthouse, then Hallgrímskirkja, Harpa, Old Harbour and seafood dinner.",
-        },
-        {
-            "date": "May 13",
-            "phase": 5,
-            "title": "Snæfellsnes day trip from Reykjavík",
-            "drive": "Reykjavík ↔ Stykkishólmur/Kirkjufell/Arnarstapi",
-            "plan": "Walter Mitty bridge/harbor in Stykkishólmur, Kirkjufell, Arnarstapi-Hellnar coastal path, back to Reykjavík for dinner/live music.",
-        },
-        {
-            "date": "May 14",
-            "phase": 5,
-            "title": "Reykjavík city day",
-            "drive": "Local only",
-            "plan": "National Museum, Perlan, Settlement Exhibition, Laugavegur, Tjörnin and weather-dependent Nauthólsvík or live jazz/blues.",
-        },
-    ]
-
-
-def build_turns():
-    return [
-        {
-            "phase": 3,
-            "title": "Leg 19 Reykjavík routing correction",
-            "text": "Leg 19 is now forced through Reykjavík: Krafla/Víti area → Reykjavík → Selfoss. This prevents the map engine from drawing a shorter inland route and keeps Phase 3 on the practical Route 1 corridor.",
-        },
-        {
-            "phase": 2,
-            "title": "Power-station coverage added",
-            "text": "The May 8 north segment shows Bjarnaflag Geothermal Power Station and Krafla Power Station as distinct visits, with Krafla/Víti as the nearby geology stop before the southbound extension.",
-        },
-        {
-            "phase": 3,
-            "title": "Weather update: Phase 3 follows Phase 2 route plus extension",
-            "text": "Due to weather, Phase 3 uses the same practical Route 1 corridor as Phase 2, forces the route through Reykjavík, and then extends to Selfoss. Golden Circle and South Coast items are optional add-ons from the Selfoss base.",
-        },
-    ]
 
 
 def sync_app_js(route_data):
     """Replace the embedded const routeData in app.js."""
     app = APP_JS_PATH.read_text(encoding="utf-8")
     boundary = app.find("const iconSvg")
-
     if boundary < 0:
         raise RuntimeError("Could not find `const iconSvg` boundary in app.js")
-
     updated = (
         "const routeData = "
         + json.dumps(route_data, ensure_ascii=False)
         + ";\n\n"
         + app[boundary:]
     )
-
     APP_JS_PATH.write_text(updated, encoding="utf-8")
 
 
-def write_itinerary_md(route_data):
-    lines = [
-        "# Iceland Ring Road Expedition - Latest Itinerary Update\n\n",
-        "Generated from build_route_data.py.\n\n",
-        (
-            f"Mapped latest itinerary baseline: "
-            f"{route_data['totals']['distance_km']} km, "
-            f"{route_data['totals']['time_min'] // 60}h "
-            f"{route_data['totals']['time_min'] % 60:02d}m driving.\n\n"
-        ),
-    ]
-
-    for phase in route_data["phases"]:
-        dist = sum(route_data["legs"][i - 1]["distance_km"] for i in phase["legs"])
-        mins = sum(route_data["legs"][i - 1]["time_min"] for i in phase["legs"])
-
-        lines.append(f"## Phase {phase['id']} - {phase['name']} ({phase['dates']})\n\n")
-        lines.append(
-            f"Base: **{phase['base']}**. "
-            f"Mapped phase baseline: {dist:.0f} km, "
-            f"{mins // 60}h {mins % 60:02d}.\n\n"
-        )
-        lines.append(phase["summary"] + "\n\n")
-
-        for item in phase["items"]:
-            lines.append(f"- **{item['title']}**: {item['desc']}\n")
-
-        lines.append("\n")
-
-    lines.append("## Day-by-day plan\n\n")
-
-    for day in route_data["days"]:
-        lines.append(
-            f"- **{day['date']} - {day['title']}**: "
-            f"{day['drive']}. {day['plan']}\n"
-        )
-
-    lines.append("\n## Route notes\n\n")
-
-    for note in route_data["turns"]:
-        lines.append(f"- **Phase {note['phase']} - {note['title']}**: {note['text']}\n")
-
-    ITINERARY_MD_PATH.write_text("".join(lines), encoding="utf-8")
-
-
 def main():
-    PROJECT_DIR.mkdir(parents=True, exist_ok=True)
+    print(f"Reading trip plan from {TRIP_PLAN_PATH}...")
+    points, route_overrides, phases_meta, days, turns = parse_trip_plan(TRIP_PLAN_PATH)
+    print(f"  {len(points)} waypoints | {len(route_overrides)} overrides | "
+          f"{len(phases_meta)} phases | {len(days)} days | {len(turns)} notes\n")
 
-    legs = build_legs()
+    legs = build_legs(points, route_overrides)
     phase_legs = build_phase_leg_index(legs)
 
     route_data = {
         "legs": legs,
-        "phases": build_phases(phase_legs),
-        "stops": build_stops(),
-        "turns": build_turns(),
-        "days": build_days(),
+        "phases": build_phases(phases_meta, phase_legs),
+        "stops": build_stops(points),
+        "turns": turns,
+        "days": days,
         "totals": {
             "distance_km": round(sum(leg["distance_km"] for leg in legs), 1),
             "time_min": sum(leg["time_min"] for leg in legs),
         },
-        "updated": "Generated from build_route_data.py",
+        "updated": "Generated from docs/trip-plan.md",
     }
 
     ROUTE_DATA_PATH.write_text(
         json.dumps(route_data, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-
     sync_app_js(route_data)
-    write_itinerary_md(route_data)
 
     print("\nWrote:")
-    print(f"- {ROUTE_DATA_PATH}")
-    print(f"- {APP_JS_PATH}")
-    print(f"- {ITINERARY_MD_PATH}")
+    print(f"  {ROUTE_DATA_PATH}")
+    print(f"  {APP_JS_PATH}")
     print(
         f"\nTotal: {route_data['totals']['distance_km']} km, "
         f"{route_data['totals']['time_min'] // 60}h "
