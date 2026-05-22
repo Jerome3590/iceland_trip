@@ -39,7 +39,7 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 
 ## File Structure
 
-| File | Purpose |
+| File/Folder | Purpose |
 |---|---|
 | `index.html` | Single-page HTML shell |
 | `app.js` | **All-in-one bundle** — `const routeData={…}` + all map/UI logic |
@@ -47,19 +47,22 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 | `route-data.json` | **Source of truth** for all route data — edit here, then rebuild |
 | `charging-map.js` | EV charging station map (preserved, not currently wired) |
 | `base.css` | Typography and CSS reset |
+| `build-app.js` | Injects `route-data.json` into `app.js` (preserves all patches) |
+| `scripts/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
+| `docs/` | Itinerary, pipeline docs, TODO |
+| `archive/` | Applied one-off migration scripts (history preserved) |
 
 ## Dev Workflow
 
 **After editing `route-data.json`:**
 ```powershell
 node build-app.js        # rebuilds app.js with fresh route data
-node verify-patch.js     # confirms all 9 features still present
 ```
 
 **Deploy to S3 + CloudFront:**
 ```powershell
-aws s3 sync . s3://jerome-dixon.io/iceland_trip/ --delete `
-  --exclude ".git/*" --exclude "node_modules/*" --exclude "iceland-route-map/*"
+aws s3 cp app.js s3://jerome-dixon.io/iceland_trip/app.js
+aws s3 cp route-data.json s3://jerome-dixon.io/iceland_trip/route-data.json
 aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
 ```
 
@@ -67,16 +70,22 @@ See `DEV_RULES.md` for full architecture notes and feature checklist.
 
 ## Photos Pipeline (GPS matching)
 
-Download Iceland Trip album from Google Photos → extract GPS → match to stops:
-```powershell
-exiftool -csv -FileName -GPSLatitude -GPSLongitude -GPSLatitudeRef -GPSLongitudeRef -DateTimeOriginal .\photos\ > photo-gps.csv
-node match-photos.js
-```
-See `photos-pipeline.md` for full steps.
+Full end-to-end pipeline — Google Photos → S3:
+
+| Script | Step |
+|---|---|
+| *(rclone + exiftool)* | **0** — Download album & extract GPS → `photo-gps.csv` |
+| `1-match-photos.js` | **1** — Match GPS coords to stops (3-mile radius) |
+| `2-upload-photos.js` | **2** — Convert HEIC → JPEG and upload to S3 under stop slug |
+| `3-rematch-all.js` | **3** — Redistribute all photos at 3-mile radius (idempotent) |
+| `4-reupload-new-stops.js` | **4** — Copy photos to canonical S3 paths for new stops |
+| `5-cleanup-s3.js` | **5** — Remove stale S3 files no longer in `route-data.json` |
+
+See `docs/photos-pipeline.md` for full step-by-step instructions.
 
 ## TODO / Dropped Stops
 
-Stops removed from the active route but preserved for future trips — see `TODO.md`:
+Stops removed from the active route but preserved for future trips — see `docs/TODO.md`:
 - Snæfellsnes Peninsula day trip (Walter Mitty bridge, Kirkjufell, Arnarstapi)
 - Húsið Museum / Eyrarbakki
 - LAVA Centre (Hvolsvöllur)
