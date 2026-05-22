@@ -13,7 +13,7 @@ photos/
 photos-web/
 
 # Local only — will migrate to private repo
-LESSONS_LEARNED.md
+docs/LESSONS_LEARNED.md
 .windsurfrules
 
 # Generated pipeline outputs (in data/)
