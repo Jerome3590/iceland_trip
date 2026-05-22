@@ -18,10 +18,11 @@ const path = require('path');
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const args       = process.argv.slice(2);
+const DATA_DIR   = path.join(__dirname, '../data');
 const RADIUS_KM  = parseFloat(argVal(args, '--radius') || '2');
-const PHOTOS_DIR = argVal(args, '--photos') || './photos';
-const OUT_FILE   = argVal(args, '--out')    || 'photo-stops.json';
-const CSV_FILE   = argVal(args, '--csv')    || 'photo-gps.csv';
+const PHOTOS_DIR = argVal(args, '--photos') || path.join(__dirname, '../photos');
+const OUT_FILE   = argVal(args, '--out')    || path.join(DATA_DIR, 'photo-stops.json');
+const CSV_FILE   = argVal(args, '--csv')    || path.join(DATA_DIR, 'photo-gps.csv');
 
 function argVal(a, flag) { const i = a.indexOf(flag); return i !== -1 ? a[i+1] : null; }
 
@@ -84,7 +85,7 @@ if (!fs.existsSync(CSV_FILE)) {
   process.exit(1);
 }
 
-const routeData = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
+const routeData = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'route-data.json'), 'utf8'));
 const stops     = routeData.stops;
 const photos    = parseCSV(fs.readFileSync(CSV_FILE, 'utf8'));
 
@@ -143,7 +144,7 @@ summary.forEach(({ stop, count }) => console.log(`  ${count.toString().padStart(
 
 // ── Write outputs ─────────────────────────────────────────────────────────────
 fs.writeFileSync(OUT_FILE, JSON.stringify(summary, null, 2));
-fs.writeFileSync('unmatched.json', JSON.stringify(unmatched, null, 2));
+fs.writeFileSync(path.join(DATA_DIR, 'unmatched.json'), JSON.stringify(unmatched, null, 2));
 console.log(`\nWrote ${OUT_FILE} and unmatched.json`);
 
 // ── Patch route-data with photos arrays ───────────────────────────────────────
@@ -152,6 +153,6 @@ for (const { stop, photos } of summary) {
   const s = patched.stops.find(s => s.name === stop);
   if (s) s.photos = photos;
 }
-fs.writeFileSync('route-data-photos.json', JSON.stringify(patched));
-console.log('Wrote route-data-photos.json — review then rename to route-data.json and run: node build-app.js');
+fs.writeFileSync(path.join(DATA_DIR, 'route-data-photos.json'), JSON.stringify(patched));
+console.log('Wrote data/route-data-photos.json — review then copy to data/route-data.json and run: node build-app.js');
 

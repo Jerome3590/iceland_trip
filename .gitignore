@@ -16,12 +16,12 @@ photos-web/
 LESSONS_LEARNED.md
 .windsurfrules
 
-# Generated pipeline outputs
-photo-gps.csv
-photo-stops.json
-route-data-photos.json
-unmatched.json
-s3-manifest.txt
+# Generated pipeline outputs (in data/)
+data/photo-gps.csv
+data/photo-stops.json
+data/route-data-photos.json
+data/unmatched.json
+data/s3-manifest.txt
 
 # Archive — applied one-offs (local only, migrating to private repo)
 archive/

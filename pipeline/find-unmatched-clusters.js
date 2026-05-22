@@ -3,9 +3,11 @@
  * Finds photos outside 3-mile radius of any stop, clusters them at 3-mile 
  * increments, identifies location, and adds missing stops.
  */
-const fs = require('fs');
-const d   = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
-const csv = fs.readFileSync('photo-gps.csv','utf8').split('\n').slice(1).filter(Boolean);
+const fs   = require('fs');
+const path = require('path');
+const DATA  = path.join(__dirname, '../data');
+const d   = JSON.parse(fs.readFileSync(path.join(DATA, 'route-data.json'), 'utf8'));
+const csv = fs.readFileSync(path.join(DATA, 'photo-gps.csv'),'utf8').split('\n').slice(1).filter(Boolean);
 
 const RADIUS_KM = 3 * 1.60934; // 3 miles
 

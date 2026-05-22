@@ -41,28 +41,34 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 
 | File/Folder | Purpose |
 |---|---|
-| `index.html` | Single-page HTML shell |
-| `app.js` | **All-in-one bundle** — `const routeData={…}` + all map/UI logic |
-| `style.css` | All styles (map, cards, filter bar, mobile layout) |
-| `route-data.json` | **Source of truth** for all route data — edit here, then rebuild |
-| `charging-map.js` | EV charging station map (preserved, not currently wired) |
-| `base.css` | Typography and CSS reset |
-| `build-app.js` | Injects `route-data.json` into `app.js` (preserves all patches) |
-| `scripts/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
+| `website/` | **S3 deploy artifacts** — served at `jerome-dixon.io/iceland_trip/` |
+| `website/app.js` | All-in-one bundle — `const routeData={…}` + all map/UI logic |
+| `website/index.html` | Single-page HTML shell |
+| `website/style.css` | All styles (map, cards, filter bar, mobile layout) |
+| `website/charging-map.js` | EV charging station map |
+| `data/route-data.json` | **Source of truth** for all route data — edit here, then rebuild |
+| `pipeline/` | Numbered workflow scripts (Steps 1–5) |
+| `pipeline/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
+| `build-app.js` | Bridge: `data/route-data.json` → `website/app.js` |
 | `docs/` | Itinerary, pipeline docs, TODO |
-| `archive/` | Applied one-off migration scripts (history preserved) |
 
 ## Dev Workflow
 
-**After editing `route-data.json`:**
+**After editing `data/route-data.json`:**
 ```powershell
-node build-app.js        # rebuilds app.js with fresh route data
+node build-app.js        # rebuilds website/app.js with fresh route data
 ```
 
 **Deploy to S3 + CloudFront:**
 ```powershell
-aws s3 cp app.js s3://jerome-dixon.io/iceland_trip/app.js
-aws s3 cp route-data.json s3://jerome-dixon.io/iceland_trip/route-data.json
+aws s3 cp website/app.js s3://jerome-dixon.io/iceland_trip/app.js
+aws s3 cp data/route-data.json s3://jerome-dixon.io/iceland_trip/route-data.json
+aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
+```
+
+**Full website sync (initial deploy or CSS/HTML changes):**
+```powershell
+aws s3 sync website/ s3://jerome-dixon.io/iceland_trip/
 aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
 ```
 
@@ -74,12 +80,12 @@ Full end-to-end pipeline — Google Photos → S3:
 
 | Script | Step |
 |---|---|
-| *(rclone + exiftool)* | **0** — Download album & extract GPS → `photo-gps.csv` |
-| `1-match-photos.js` | **1** — Match GPS coords to stops (3-mile radius) |
-| `2-upload-photos.js` | **2** — Convert HEIC → JPEG and upload to S3 under stop slug |
-| `3-rematch-all.js` | **3** — Redistribute all photos at 3-mile radius (idempotent) |
-| `4-reupload-new-stops.js` | **4** — Copy photos to canonical S3 paths for new stops |
-| `5-cleanup-s3.js` | **5** — Remove stale S3 files no longer in `route-data.json` |
+| *(rclone + exiftool)* | **0** — Download album & extract GPS → `data/photo-gps.csv` |
+| `pipeline/1-match-photos.js` | **1** — Match GPS coords to stops (3-mile radius) |
+| `pipeline/2-upload-photos.js` | **2** — Convert HEIC → JPEG and upload to S3 under stop slug |
+| `pipeline/3-rematch-all.js` | **3** — Redistribute all photos at 3-mile radius (idempotent) |
+| `pipeline/4-reupload-new-stops.js` | **4** — Copy photos to canonical S3 paths for new stops |
+| `pipeline/5-cleanup-s3.js` | **5** — Remove stale S3 files no longer in `data/route-data.json` |
 
 See `docs/photos-pipeline.md` for full step-by-step instructions.
 

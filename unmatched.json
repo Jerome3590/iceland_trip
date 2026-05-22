@@ -1,0 +1,86 @@
+[
+  {
+    "file": "01.jpeg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "02.jpeg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "03.jpeg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "04.jpeg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "7E5DF9D7-A40F-4EC2-8F33-09E1A52CE177.jpg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "All_Phases.png",
+    "reason": "no GPS"
+  },
+  {
+    "file": "B4F3AAFF-94AD-455F-9416-A6804DBA8634.jpg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "F3BC274D-7D5D-46DF-9539-39B18949FDCD.jpg",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_0026.PNG",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_0027.PNG",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_7632.HEIC",
+    "lat": 37.533169,
+    "lon": -77.433656,
+    "taken": "2026:03:31 14:55:31",
+    "dist_km": 4597.55,
+    "nearest_stop": "Arnarstapi / Hellnar"
+  },
+  {
+    "file": "IMG_7633.HEIC",
+    "lat": 37.508081,
+    "lon": -77.333831,
+    "taken": "2026:03:31 15:46:28",
+    "dist_km": 4595.35,
+    "nearest_stop": "Arnarstapi / Hellnar"
+  },
+  {
+    "file": "IMG_7687.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_7741.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_8230.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_8241.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_8341.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_8342.HEIC",
+    "reason": "no GPS"
+  },
+  {
+    "file": "IMG_8628.PNG",
+    "reason": "no GPS"
+  }
+]

@@ -4,9 +4,11 @@
  * Preserves existing S3 URLs — only reassigns which stop array a photo lives in.
  * Run: node rematch-all.js
  */
-const fs = require('fs');
-const d   = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
-const csv = fs.readFileSync('photo-gps.csv','utf8').split('\n').slice(1).filter(Boolean);
+const fs   = require('fs');
+const path = require('path');
+const DATA  = path.join(__dirname, '../data');
+const d   = JSON.parse(fs.readFileSync(path.join(DATA, 'route-data.json'), 'utf8'));
+const csv = fs.readFileSync(path.join(DATA, 'photo-gps.csv'),'utf8').split('\n').slice(1).filter(Boolean);
 
 const RADIUS_MI = 3.0;
 const RADIUS_KM = RADIUS_MI * 1.60934;
@@ -93,6 +95,6 @@ if (empty.length) {
   empty.forEach(s => console.log(`  Ph${s.phase} | ${s.name}`));
 }
 
-fs.writeFileSync('route-data.json', JSON.stringify(d));
-console.log('\nroute-data.json saved');
+fs.writeFileSync(path.join(DATA, 'route-data.json'), JSON.stringify(d));
+console.log('\ndata/route-data.json saved');
 

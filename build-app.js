@@ -6,8 +6,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const routeDataPath = path.join(__dirname, 'route-data.json');
-const appPath       = path.join(__dirname, 'app.js');
+const routeDataPath = path.join(__dirname, 'data', 'route-data.json');
+const appPath       = path.join(__dirname, 'website', 'app.js');
 
 // Read the current app.js and extract the logic section (everything after the routeData declaration)
 const current = fs.readFileSync(appPath, 'utf8');

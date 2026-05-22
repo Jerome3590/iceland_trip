@@ -7,8 +7,8 @@ const path    = require('path');
 const { execSync }     = require('child_process');
 const { Worker }       = require('worker_threads');
 
-const PHOTOS_DIR  = path.resolve('./photos/Iceland Trip');
-const WORK_DIR    = path.resolve('./photos-web');
+const PHOTOS_DIR  = path.resolve(__dirname, '../photos/Iceland Trip');
+const WORK_DIR    = path.resolve(__dirname, '../photos-web');
 const S3_BUCKET   = 'jerome-dixon.io';
 const S3_PREFIX   = 'iceland_trip/photos';
 const CDN_BASE    = 'https://jerome-dixon.io/iceland_trip/photos';
@@ -29,7 +29,7 @@ function s3Upload(localFile, s3Key) {
 
 function runWorker(srcFile, destFile) {
   return new Promise((resolve, reject) => {
-    const w = new Worker(path.resolve('./upload-worker.js'), {
+    const w = new Worker(path.resolve(__dirname, './upload-worker.js'), {
       workerData: { srcFile, destFile, MAX_WIDTH, QUALITY }
     });
     w.on('message', msg => msg.ok ? resolve() : reject(new Error(msg.err)));
@@ -39,7 +39,7 @@ function runWorker(srcFile, destFile) {
 }
 
 // ── Build task list ───────────────────────────────────────────────────────────
-const photoStops = JSON.parse(fs.readFileSync('photo-stops.json', 'utf8'));
+const photoStops = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/photo-stops.json'), 'utf8'));
 if (!fs.existsSync(WORK_DIR)) fs.mkdirSync(WORK_DIR, { recursive: true });
 
 const tasks = [];
@@ -105,11 +105,12 @@ const urlMap = {};
   console.log(`\n\nFinished: ${done} uploaded, ${errors} convert errors`);
 
   // ── Patch route-data.json with S3 URLs ─────────────────────────────────────
-  const routeData = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
+  const rdPath = path.join(__dirname, '../data/route-data.json');
+  const routeData = JSON.parse(fs.readFileSync(rdPath, 'utf8'));
   for (const stopObj of routeData.stops) {
     if (urlMap[stopObj.name]) stopObj.photos = urlMap[stopObj.name];
   }
-  fs.writeFileSync('route-data.json', JSON.stringify(routeData));
+  fs.writeFileSync(rdPath, JSON.stringify(routeData));
   console.log('route-data.json updated with S3 URLs');
 
   // ── Invalidate CloudFront ──────────────────────────────────────────────────

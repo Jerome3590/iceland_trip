@@ -5,13 +5,15 @@
  * Pass --dry-run to preview without deleting.
  */
 const fs   = require('fs');
+const path = require('path');
 const { execSync } = require('child_process');
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const CF  = 'https://jerome-dixon.io';
 const S3  = 's3://jerome-dixon.io';
+const DATA = path.join(__dirname, '../data');
 
-const d = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
+const d = JSON.parse(fs.readFileSync(path.join(DATA, 'route-data.json'), 'utf8'));
 
 // Build set of all referenced S3 keys
 const referenced = new Set();
@@ -22,7 +24,7 @@ d.stops.forEach(s => (s.photos || []).forEach(p => {
 console.log(`Referenced in route-data.json: ${referenced.size} files`);
 
 // Read manifest of all S3 files
-const manifest = fs.readFileSync('s3-manifest.txt', 'utf8')
+const manifest = fs.readFileSync(path.join(DATA, 's3-manifest.txt'), 'utf8')
   .split('\n').filter(Boolean);
 
 const toDelete = [];

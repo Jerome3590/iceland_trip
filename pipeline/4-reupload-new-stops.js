@@ -5,9 +5,11 @@
  * Uses: aws s3 cp (server-side copy, no download needed)
  */
 const fs   = require('fs');
+const path = require('path');
 const { execSync } = require('child_process');
 
-const d   = JSON.parse(fs.readFileSync('route-data.json', 'utf8'));
+const RD_PATH = path.join(__dirname, '../data/route-data.json');
+const d   = JSON.parse(fs.readFileSync(RD_PATH, 'utf8'));
 const CF  = 'https://jerome-dixon.io';
 const S3  = 's3://jerome-dixon.io';
 
@@ -66,6 +68,6 @@ NEW_STOP_NAMES.forEach(stopName => {
 });
 
 console.log(`\nTotal copied: ${totalCopied} | Already OK: ${totalSkipped}`);
-fs.writeFileSync('route-data.json', JSON.stringify(d));
-console.log('route-data.json saved');
+fs.writeFileSync(RD_PATH, JSON.stringify(d));
+console.log('data/route-data.json saved');
 
