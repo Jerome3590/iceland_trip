@@ -22,6 +22,7 @@ data/photo-stops.json
 data/route-data-photos.json
 data/unmatched.json
 data/s3-manifest.txt
+s3-manifest.txt
 data/unmatched-review.html
 
 # Archive — applied one-offs (local only, migrating to private repo)

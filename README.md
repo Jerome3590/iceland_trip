@@ -65,6 +65,8 @@ This project has two required inputs. Everything else is generated from them.
 | `docs/trip-plan.md` | **Required input #1** — markdown itinerary (waypoints, phases, days, notes) |
 | `docs/build-route-data.md` | How to add stops, force waypoints, run the script |
 | `docs/route-data-schema.md` | **Schema guide** — how to add stops, legs, phases |
+| `docs/app-architecture.md` | `app.js` logic section order, features checklist, CSS rules |
+| `docs/policy.json` | S3 bucket public-read policy (reference) |
 
 ## Dev Workflow
 
@@ -107,7 +109,7 @@ aws s3 sync website/ s3://jerome-dixon.io/iceland_trip/
 aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
 ```
 
-See `DEV_RULES.md` for full architecture notes and feature checklist.
+See `docs/app-architecture.md` for full `app.js` architecture notes and feature checklist.
 
 ## Photos Pipeline (GPS matching)
 
