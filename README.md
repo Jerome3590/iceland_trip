@@ -39,96 +39,44 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 
 ## Required Inputs
 
-This project has two required inputs. Everything else is generated from them.
+Two inputs drive everything else — all other files are generated.
 
-| Input | What it is | Used by |
-|---|---|---|
-| `docs/trip-plan.md` | **Markdown itinerary** — waypoints, phases, days, route notes | `python scripts/build_route_data.py` → `data/route-data.json` → `website/app.js` |
-| **Google Photos album** | **Photo album** — HEIC photos with embedded GPS EXIF | `rclone` download → `exiftool` GPS extract → `pipeline/1-5` → S3 |
+| Input | Description |
+|---|---|
+| [`docs/trip-plan.md`](docs/trip-plan.md) | Markdown itinerary — waypoints, phases, days, route notes |
+| **Google Photos album** | HEIC photos with embedded GPS EXIF |
 
 ---
 
-## File Structure
+## Documentation
 
-| File/Folder | Purpose |
+| Doc | Contents |
 |---|---|
-| `website/` | **S3 deploy artifacts** — served at `jerome-dixon.io/iceland_trip/` |
-| `website/app.js` | All-in-one bundle — `const routeData={…}` + all map/UI logic |
-| `website/index.html` | Single-page HTML shell |
-| `website/style.css` | All styles (map, cards, filter bar, mobile layout) |
-| `website/charging-map.js` | EV charging station map |
-| `data/route-data.json` | **Source of truth** for all route data — edit here, then rebuild |
-| `pipeline/` | Numbered workflow scripts (Steps 1–5) |
-| `pipeline/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
-| `build-app.js` | Bridge: `data/route-data.json` → `website/app.js` |
-| `scripts/build_route_data.py` | **Regenerate `route-data.json` from scratch** via OSRM routing API |
-| `docs/trip-plan.md` | **Required input #1** — markdown itinerary (waypoints, phases, days, notes) |
-| `docs/build-route-data.md` | How to add stops, force waypoints, run the script |
-| `docs/route-data-schema.md` | **Schema guide** — how to add stops, legs, phases |
-| `docs/app-architecture.md` | `app.js` logic section order, features checklist, CSS rules |
-| `docs/policy.json` | S3 bucket public-read policy (reference) |
+| [`data/README.md`](data/README.md) | `route-data.json` schema, markdown parsing, file inventory |
+| [`pipeline/README.md`](pipeline/README.md) | End-to-end photo pipeline with Mermaid flow chart |
+| [`docs/build-route-data.md`](docs/build-route-data.md) | How to add stops, force waypoints, run `build_route_data.py` |
+| [`docs/route-data-schema.md`](docs/route-data-schema.md) | Full field-level schema for `route-data.json` |
+| [`docs/app-architecture.md`](docs/app-architecture.md) | `app.js` logic order, features checklist, CSS rules |
+| [`docs/photos-pipeline.md`](docs/photos-pipeline.md) | Step-by-step photo pipeline instructions |
+| [`docs/TODO.md`](docs/TODO.md) | Dropped stops and future ideas |
 
-## Dev Workflow
+---
 
-### Input 1 — Edit the itinerary
+## Quick Reference
 
-All route changes start in `docs/trip-plan.md`. Edit the markdown, then regenerate:
-
+**Edit the itinerary → rebuild:**
 ```powershell
-pip install -r scripts/requirements.txt
-python scripts/build_route_data.py   # reads trip-plan.md → writes data/route-data.json + website/app.js
+# Edit docs/trip-plan.md, then:
+python scripts/build_route_data.py   # re-queries OSRM, rewrites route-data.json + app.js
+# — or for minor edits to data/route-data.json only —
+node build-app.js
 ```
 
-### Input 2 — Add or update photos
-
-Photos come from a Google Photos album. See `docs/photos-pipeline.md` for full steps.
-
-```powershell
-rclone copy "google-photos:Iceland Trip" photos/"Iceland Trip"   # download album
-exiftool -csv ... photos/ > data/photo-gps.csv                   # extract GPS
-node pipeline/1-match-photos.js                                   # match to stops
-node pipeline/2-upload-photos.js                                  # convert + upload to S3
-```
-
-### Quick rebuild (route-data edits only, no OSRM re-query)
-
-```powershell
-node build-app.js        # rebuilds website/app.js from data/route-data.json
-```
-
-**Deploy to S3 + CloudFront:**
+**Deploy:**
 ```powershell
 aws s3 cp website/app.js s3://jerome-dixon.io/iceland_trip/app.js
 aws s3 cp data/route-data.json s3://jerome-dixon.io/iceland_trip/route-data.json
 aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
 ```
 
-**Full website sync (initial deploy or CSS/HTML changes):**
-```powershell
-aws s3 sync website/ s3://jerome-dixon.io/iceland_trip/
-aws cloudfront create-invalidation --distribution-id E3MZK5HYTJ14P3 --paths "/iceland_trip/*"
-```
-
-See `docs/app-architecture.md` for full `app.js` architecture notes and feature checklist.
-
-## Photos Pipeline (GPS matching)
-
-Full end-to-end pipeline — Google Photos → S3:
-
-| Script | Step |
-|---|---|
-| *(rclone + exiftool)* | **0** — Download album & extract GPS → `data/photo-gps.csv` |
-| `pipeline/1-match-photos.js` | **1** — Match GPS coords to stops (3-mile radius) |
-| `pipeline/2-upload-photos.js` | **2** — Convert HEIC → JPEG and upload to S3 under stop slug |
-| `pipeline/3-rematch-all.js` | **3** — Redistribute all photos at 3-mile radius (idempotent) |
-| `pipeline/4-reupload-new-stops.js` | **4** — Copy photos to canonical S3 paths for new stops |
-| `pipeline/5-cleanup-s3.js` | **5** — Remove stale S3 files no longer in `data/route-data.json` |
-
-See `docs/photos-pipeline.md` for full step-by-step instructions.
-
-## TODO / Dropped Stops
-
-Stops removed from the active route but preserved for future trips — see `docs/TODO.md`:
-- Snæfellsnes Peninsula day trip (Walter Mitty bridge, Kirkjufell, Arnarstapi)
-- Húsið Museum / Eyrarbakki
-- LAVA Centre (Hvolsvöllur)
+**Add photos → see [`pipeline/README.md`](pipeline/README.md)**
