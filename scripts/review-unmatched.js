@@ -8,9 +8,9 @@ const fs   = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const PHOTOS_DIR  = path.resolve(__dirname, 'photos', 'Iceland Trip');
-const UNMATCHED   = path.join(__dirname, 'unmatched.json');
-const OUT_HTML    = path.join(__dirname, 'data', 'unmatched-review.html');
+const PHOTOS_DIR  = path.resolve(__dirname, '../photos', 'Iceland Trip');
+const UNMATCHED   = path.join(__dirname, '../data/unmatched.json');
+const OUT_HTML    = path.join(__dirname, '../data', 'unmatched-review.html');
 
 const photos = JSON.parse(fs.readFileSync(UNMATCHED, 'utf8'));
 
