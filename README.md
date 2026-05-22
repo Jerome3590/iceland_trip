@@ -50,10 +50,17 @@ Interactive trip map for a May 2026 EV Ring Road expedition. Built with MapLibre
 | `pipeline/` | Numbered workflow scripts (Steps 1–5) |
 | `pipeline/utils/geo-utils.js` | Shared: `haversine`, `slug`, `toDec`, `CF`, `photoUrl` |
 | `build-app.js` | Bridge: `data/route-data.json` → `website/app.js` |
+| `scripts/build_route_data.py` | **Regenerate `route-data.json` from scratch** via OSRM routing API |
 | `docs/` | Itinerary, pipeline docs, TODO, schema reference |
 | `docs/route-data-schema.md` | **Schema guide** — how to add stops, legs, phases |
 
 ## Dev Workflow
+
+**To regenerate `data/route-data.json` from scratch** (re-queries OSRM for all leg geometries):
+```powershell
+pip install -r scripts/requirements.txt
+python scripts/build_route_data.py
+```
 
 **After editing `data/route-data.json`:**
 ```powershell
